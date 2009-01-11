@@ -175,6 +175,13 @@ def textualize(path):
   lines = content.split("\n")
   meta, lines = parse_meta(lines)
   return "\n".join(lines), meta
+  
+def fix_typography(html):
+  html = re.sub(u'&laquo;', '«', html)
+  html = re.sub(u'<p>«', '<p><font class="hlaquo">&laquo;</font>', html)
+  html = re.sub(u' «', '<font class="slaquo"> </font><font class="hlaquo">&laquo;</font>', html)
+  html = re.sub(u' \\(', '<font class="sbrace"> </font><font class="hbrace">(</font>', html)
+  return html
 
 def htmlize(path):
   file = os.path.join(pages_path, path)
@@ -191,6 +198,7 @@ def htmlize(path):
   html = markdown.markdown(content)
   html = place_links_to_pages(path, html)
   html = relink_images(html)
+  html = fix_typography(html)
   return html, meta
 
 def find_and_htmlize(context_path, page):
