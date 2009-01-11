@@ -4,7 +4,7 @@
   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>			
   <link rel="stylesheet" type="text/css" media="screen" href="/static/styles/screen.css" />
   <link rel="stylesheet" type="text/css" media="print" href="/static/styles/print.css" />
-  <title>{% block title %}Untitled{% endblock %} — {{ site_title }}</title>
+  <title>{% block title %}{% if title %}{{ title }} — {{ site_title }}{% else %}{{ site_title }}{% endif %}{% endblock %}</title>
   {% block head %}{% endblock %}
 </head>
 <body>
@@ -38,7 +38,7 @@
     {% block content %}{% endblock %}
 
     <div id="footer">
-      &copy; 2008 — <a class="nav" href="mailto:andreyvit@gmail.com">Андрей Таранцов</a>
+      &copy; {{ copyright_year }} — <a class="nav" href="mailto:{{copyright_email}}">{{copyright_name}}</a>
     </div>
   </div>
 </body>	

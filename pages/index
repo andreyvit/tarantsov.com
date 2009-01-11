@@ -1,47 +1,67 @@
 Site-Title: Andrey Tarantsov's Wiki
+Copyright-Year:  2008
+Copyright-Email: andreyvit@gmail.com
+Copyright-Name:  Andrey Tarantsov
 
-Welcome
-=======
+<img src="andreyvit.png" class="left" width="224" height="224" style="padding: 0px 6px 16px 0px; margin: 0em 1.5em 0.5em 0px;" />
+<div style="margin-left: 280px;">
+I'm the chief technical officer and co-founder of [YourSway LLC](http://www.yoursway.com/). 
 
-I'm the chief technical officer and co-founder of YourSway LLC.
+**Contacts:** You can email / Google Talk me at [andreyvit@gmail.com](mailto:andreyvit@gmail.com), ICQ me on~120535992 or Skype me at~“andreyvit”, or call me on +7~906~193~2959. Time zone's GMT+6.
 
-Site Contents
--------------
+**On this site:** [Eclipse zone]((eclipse)) | [Java stuff]((java)) | [more about me]((bio)).
 
-* [[Eclipse stuff|eclipse]]
-* [[Java stuff|java]], which currently only contains a list of (and the contracts behind) our custom [[Java annotations|java/annotations]]
+If you can read in Russian, there's a [[Russian-language section|rus]] here, and also you might want to have a look at [my blog](http://blog.tarantsov.com/).
 
-Contacts
---------
-
-Blog: <a href="http://blog.tarantsov.com/">blog.tarantsov.com</a> (in Russian)<br>
-Email: <a href="mailto:andreyvit@gmail.com">andreyvit@gmail.com</a><br>
-Mobile phone: +7 906 193 2959 (current); +7 905 956 6773 is stolen, but maybe I&#39;ll restore it.<br>
-YourSway LLC Office: Russia, Novosibirsk, 630000, Musi Jalilya, 11 (“Pentagon”), room 630<br>
-ICQ UIN: 120535992<br>
-Jabber ID: andreyvit@gmail.com<br>
-Skype ID: andreyvit<br>
-Physical address: Russia, Novosibirsk, 630058, Russkaya 23-21<br>
-Date of birth: 5 Feb, 1986.
+</div>
+<clear>
 
 Projects
 --------
 
-### Bigger ones:
+Here at YourSway we are working on two major own products (besides the client work):
 
-* Static Analysis Done Right (yet to be released, scheduled in May) — an open-source framework for developing feature-rich static analysis implementations; I'm the original founder and currently a co-architect of this project
-* YourSway IDE (yet to be released, scheduled in June) — the first Python, Ruby and PHP IDE that does not suck; I'm the founder, lead architect and technical manager of this project
-* Eclipse [Dynamic Languages Toolkit](http://www.eclipse.org/dltk/) — one of the original contributors of Ruby support
+<sidebyside>
 
-### Small ones:
+**YourSway IDE** is the first Python, Ruby and PHP IDE that does not suck, which means:<br>
+– type inferencing with metaprogramming support;<br>
+– refactorings and smart error detection;<br>
+– really big effort put into usability.
 
-* [[ProjectSync|eclipse/ProjectSync]] is an Eclipse plugin that helps you keep your Eclipse projects in proper placed on disk
-* [PuTTY+](http://code.google.com/p/puttyplus/) is a modified version of the popular SSH client PuTTY
-* [ujudge](http://code.google.com/p/ujudge/) is a programming contest management and evaluation solution written in Ruby on Rails (requires significant additional effort, which is currently being done by other people)
-* [Eclipse OS X Repackager](http://code.google.com/p/eclipse-osx-repackager/) turns standard Eclipse and Rich Client Platform applications into proper Mac OS X bundles (command-line version runs under any OS)
-* [Eclipse OS X Plugin Installer](http://code.google.com/p/eclipse-osx-plugin-installer/) installs archived plugin sets (the ones you usually download from eclipse.org) into existing Eclipse installations and Eclipse bundles
-* [create-dmg](http://code.google.com/p/create-dmg/) allows unattended creation of Mac OS X DMGs with all the fancies (custom background, icon positioning, icon view mode)
+<col>
 
-## Miscellaneous
+**Taskus** is a personal task manager pursuing Jeff Raskin's text-based interaction ideas. It synchronizes with a handful of bug trackers, allowing you to manage all your tasks as a simple text file.
 
-* [[Fun Code|funcode]]
+</sidebyside>
+
+Many components of our products are being open-sourced. One of them is “**Static Analysis Done Right**” — an open-source framework for developing feature-rich IDE-friendly static analysis engines in weeks.
+
+I've learned a lot during my work on Eclipse [Dynamic Languages Toolkit](http://www.eclipse.org/dltk/). I've been one of the initial contributors of Ruby support and implemented the original type inferencing engine for it.
+
+Some smaller projects of mine:
+
+<sidebyside>
+
+[Eclipse OS X Repackager](http://www.yoursway.com/free/#repackager) turns standard Eclipse and Rich Client Platform applications into proper Mac OS X bundles (command-line version runs under any OS)
+
+<col>
+
+[Eclipse OS X Plugin Installer](http://code.google.com/p/eclipse-osx-plugin-installer/) installs archived plugin sets (the ones you usually download from eclipse.org) into existing Eclipse installations and Eclipse bundles
+
+<col>
+
+[create-dmg](http://www.yoursway.com/free/#createdmg) allows unattended creation of Mac OS X DMGs with all the fancies (custom background, icon positioning, icon view mode)
+
+<row>
+
+[ujudge](http://code.google.com/p/ujudge/) is a programming contest management and evaluation solution written in Ruby on Rails (requires significant additional effort, which is currently being done by other people)
+
+<col>
+
+[[ProjectSync|eclipse/ProjectSync]] is an Eclipse plugin that helps you keep your Eclipse projects in proper places on disk
+
+<col>
+
+[PuTTY+](http://code.google.com/p/puttyplus/) is a modified version of the popular SSH client PuTTY
+
+</sidebyside>

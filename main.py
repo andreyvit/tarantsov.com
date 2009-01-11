@@ -76,6 +76,7 @@ META_RE = re.compile(r'^[ ]{0,3}(?P<key>[A-Za-z0-9_-]+):\s*(?P<value>.*)')
 TITLE_RE = re.compile(r'#\s*(.*)')
 H1_RE = re.compile(r'<h1[^>]*>(?P<data>.+?)</h1>')
 PAGE_LINK_RE = re.compile(r'\[\[(.+?)\|(.+?)]]')
+ALT_LINK_RE = re.compile(r'\[(.+?)]\(\((.+?)\)\)')
 
 class component(object):
   
@@ -148,7 +149,9 @@ def place_links_to_pages(path, html):
       return "<a href=\"/%s/\">%s</a>" % (url, caption)
     else:
       return "%s <span style=\"color: red;\">(%s)</span>" % (caption, page)
-  return re.sub(PAGE_LINK_RE, page_linker, html)
+  html = re.sub(PAGE_LINK_RE, page_linker, html)
+  html = re.sub(ALT_LINK_RE, page_linker, html)
+  return html
   
 def determine_path_components(path):
   components = [component('home', '/')]
@@ -181,6 +184,38 @@ def fix_typography(html):
   html = re.sub(u'<p>«', '<p><font class="hlaquo">&laquo;</font>', html)
   html = re.sub(u' «', '<font class="slaquo"> </font><font class="hlaquo">&laquo;</font>', html)
   html = re.sub(u' \\(', '<font class="sbrace"> </font><font class="hbrace">(</font>', html)
+  html = re.sub(u'~', '&nbsp;', html)
+  return html
+  
+COL_WIDTH = 40
+COL_MARGIN = 10
+  
+def calculate_width_and_margin(colspan):
+  return COL_WIDTH * colspan - COL_MARGIN, COL_MARGIN
+
+def split_width_and_margin(num_cols, divider_size = 1, total_cols = 24):
+  colspan = (total_cols - divider_size * (num_cols - 1)) / num_cols
+  col_width         = COL_WIDTH * colspan - COL_MARGIN
+  margin_right      = COL_MARGIN + divider_size * COL_WIDTH
+  last_margin_right = (total_cols - colspan * num_cols - divider_size * (num_cols - 1)) * COL_WIDTH
+  return col_width, margin_right, last_margin_right
+  
+def format_sidebyside_cols(text, col_count):
+  cols = text.split('<col>')
+  col_width, margin_right, last_margin_right = split_width_and_margin(len(cols), 1)
+  
+  html = ''
+  for col in cols[0:-1]:
+    html += '<div style="float: left; width: %dpx; margin-right: %dpx;">%s</div>' % (col_width, margin_right, col)
+  html += '<div style="float: left; width: %dpx; margin-right: %dpx;">%s</div>' % (col_width, last_margin_right, cols[-1])
+  return html
+  
+def format_sidebyside(m):
+  text = m.group(1)
+  rows = text.split('<row>')
+  col_count = len(rows[0])
+  html = "\n".join([format_sidebyside_cols(row, col_count) for row in rows])
+  html += '<div class="clear"></div>'
   return html
 
 def htmlize(path):
@@ -195,10 +230,12 @@ def htmlize(path):
   meta, lines = parse_meta(lines)
   content = "\n".join(lines)
   
+  content = place_links_to_pages(path, content)
   html = markdown.markdown(content)
-  html = place_links_to_pages(path, html)
   html = relink_images(html)
   html = fix_typography(html)
+  html = re.sub('<clear>', '<div class="clear"></div>', html)
+  html = re.sub('(?s)<sidebyside>(.*?)</sidebyside>', format_sidebyside, html)
   return html, meta
 
 def find_and_htmlize(context_path, page):
@@ -236,8 +273,12 @@ class IndexHandler(BaseHandler):
     components = determine_path_components(path)
     options = read_options(path, 'index')
     site_title = options['site-title'] if 'site-title' in options else 'Site-Title missing in .options'
+    copyright_year = options['copyright-year']
+    copyright_email = options['copyright-email']
+    copyright_name = options['copyright-name']
     
-    self.data.update(title = title, content = html, components = components, site_title = site_title)
+    self.data.update(title = title, content = html, components = components, site_title = site_title,
+      copyright_year=copyright_year, copyright_email=copyright_email, copyright_name=copyright_name)
     self.render_and_finish('page.html')
 
 url_mapping = [
