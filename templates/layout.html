@@ -1,0 +1,47 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>		
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>			
+  <link rel="stylesheet" type="text/css" media="screen" href="/static/styles/screen.css" />
+  <link rel="stylesheet" type="text/css" media="print" href="/static/styles/print.css" />
+  <title>{% block title %}Untitled{% endblock %}</title>
+  {% block head %}{% endblock %}
+</head>
+<body>
+  
+  <div id="header">
+    <div class="inside">
+      <h1>Andrey Tarantsov's Wiki</h1>
+      <span id="breadcrumbs">
+        {% for c in components %}
+        {% if not forloop.first %}
+        <span>&raquo;</span>
+        {% endif %}
+        {% if forloop.last %}
+        <b>{{ c.name }}</b>
+        {% else %}
+        <a href="{{ c.href }}">{{ c.name }}</a>
+        {% endif %}
+        {% endfor %}
+      </span>
+    </div>
+  </div>
+
+  <div id="body">
+    
+    <!--     <div class="column span-24 last">
+          {% if flash %}
+          <div style="padding: 10px; margin: 10px 0px; background: silver; font-size: bigger;">{{ flash }}</div>
+          {% endif %}
+        </div> -->
+    
+    <h1>{% block heading %}{% endblock %}</h1>
+    
+    {% block content %}{% endblock %}
+
+    <div id="footer">
+      &copy; 2008 — <a class="nav" href="mailto:andreyvit@gmail.com">Андрей Таранцов</a>
+    </div>
+  </div>
+</body>	
+</html>

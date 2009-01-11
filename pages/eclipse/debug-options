@@ -1,0 +1,31 @@
+# Platform Debug Options
+
+This is a classic tip I've been recommending to all Eclipse developers I know for over two years. Use it to output additional information or change your program behavior when debugging.
+
+## Step 1. Change your code
+
+	private static boolean PRINT_PROGRESS = Boolean.valueOf( 
+		Platform.getDebugOption("my.plugin.id/myOption")).booleanValue(); 
+	private static String HOST_NAME_OVERRIDE = 
+		Platform.getDebugOption("my.plugin.id/someActivity/hostNameOverride");
+
+
+Theoretically after this point you can already set these options by providing some obscure command-line options to the runtime. However this is not the way to go.
+
+## Step 2. Create `.options` file
+
+This file is used by the Eclipse Plug-in Development Environment to determine a list of possible options, their types and default values.
+
+	my.plugin.id/myOption = false 
+	my.plugin.id/someActivity/hostNameOverride =
+
+
+I don't know much about option types, but it seems that everything you set to false or true will be treated as boolean (and rendered with a check box), and everything else will be just a text field.
+
+## Step 3. Set the options
+
+Open your launch configuration editor (Run / Debug...), switch to Tracing tab, enable the global and per-plugin checkboxes. The list on the right side shows the options from your .options file.
+
+## Troubleshooting
+
+If you can't see your options in the right-hand list, you have mistyped the plugin id in the `.options` file. While the Platform does not (to my knowledge) interpret option ids in any way, PDE insists them to have <code>_pluginId_/_whatever_</code> format.

@@ -1,0 +1,63 @@
+# ProjectSync
+
+“Keep your Eclipse projects in proper places”
+
+![ProjectSync in menu bar](ProjectSync_menu.png)
+
+If you keep your Eclipse projects in Git/Mercurial/whatever repositories and commit/update them manually, you occasionally have three problems that ProjectSync solves:
+
+1) If a project is added to one of the repositories, you have to import it into Eclipse.
+
+2) If you create a new project in Eclipse, you have to place it inside one of your repositories.
+
+3) When you want to setup a new workspace, you have to import all those damn project from each repository separately, and then assign them to proper working sets.
+
+Here's how you set up ProjectSync so that it solves your problems.
+
+## Step One: A subfolder per working set
+
+![ProjectSync folder layout](ProjectSync_layout_on_disk.png)
+
+Create a folder named `Working Sets`. For each working set you wanna have, create a subfolder. Check out your repositories into corresponding subfolders.
+
+Tip: If you already have your projects located somewhere else, symbolic links would do just fine. (On Windows, you can use various tools to create so-called “reparse points”, which are symbolic links to other directories. I recommend using the open-source FAR Manager, which has MkLink feature bound to Alt-F6 key sequence.)
+
+## Step Two: Download and install ProjectSync
+
+Download the latest build here: [ProjectSync N20080603-1851](ProjectSync_N20080603-1851.zip).
+
+Unpack and put the jars into plugins/ folder of your Eclipse installation.
+
+If you're using Eclipse 3.4M6+, you probably want to put it into dropins/ folder instead, but it likely won't work because Eclipse 3.4M6 is very very broken; I recommend removing p2 following instructions on [wiki.eclipse.org/Equinox_p2_Removal](http://wiki.eclipse.org/Equinox_p2_Removal).
+
+## Step Three: Configure and Run ProjectSync
+
+![ProjectSync config](ProjectSync_config.png)
+
+Choose “Project > ProjectSync: Configure folders...”, and add the folder you've created on the previous step.
+
+Now, when you choose “Project > ProjectSync: Add Missing and Move Misplaced Projects”, two things will happen:
+
+1) Projects that exist on disk but not in your workspace will be imported and added to the corresponding working sets. (Or simply added to the working sets, if they already exist but are not in the working sets.)
+
+2) Projects that are added to a working set managed by ProjectSync but are located in the workspace root folder (that is, newly created projects) will be moved (on disk) to the correct folder. (They are removed from Eclipse, moved to the correct folder and then re-added to Eclipse.)
+
+Enjoy!
+
+## Tip: Multiple subfolders of a working set folder
+
+ProjectSync scans the folder of each working set up to a depth of three subfolders, looking for projects. So to put several repositories into a single working set, just put several subfolders into the working set folder.
+
+How does ProjectSync decide where to move the newly created projects if there are several subfolders of a working set folder?
+
+1) If there exists a subfolder (presumably a symlink) named “default”, the project will be moved there.
+
+2) If there is exactly one subfolder that is not a project, the newly created project will be moved there.
+
+3) Else, the newly created project will be moved to the working set folder itself.
+
+## Source Code & License
+
+This project is licensed under an EPL license.
+
+The source code is available in a Git repository at [github.com/andreyvit/projectsync/](http://github.com/andreyvit/projectsync/).

@@ -1,0 +1,41 @@
+# Welcome
+
+I'm the chief technical officer and co-founder of YourSway LLC.
+
+## Site Contents
+
+* [[Eclipse stuff|eclipse]]
+* [[Java stuff|java]], which currently only contains a list of (and the contracts behind) our custom [[Java annotations|java/annotations]]
+
+## Contacts
+
+Blog: <a href="http://blog.tarantsov.com/">blog.tarantsov.com</a> (in Russian)<br>
+Email: <a href="mailto:andreyvit@gmail.com">andreyvit@gmail.com</a><br>
+Mobile phone: +7 906 193 2959 (current); +7 905 956 6773 is stolen, but maybe I&#39;ll restore it.<br>
+YourSway LLC Office: Russia, Novosibirsk, 630000, Musi Jalilya, 11 (“Pentagon”), room 630<br>
+ICQ UIN: 120535992<br>
+Jabber ID: andreyvit@gmail.com<br>
+Skype ID: andreyvit<br>
+Physical address: Russia, Novosibirsk, 630058, Russkaya 23-21<br>
+Date of birth: 5 Feb, 1986.
+
+## Projects
+
+### Bigger ones:
+
+* Static Analysis Done Right (yet to be released, scheduled in May) — an open-source framework for developing feature-rich static analysis implementations; I'm the original founder and currently a co-architect of this project
+* YourSway IDE (yet to be released, scheduled in June) — the first Python, Ruby and PHP IDE that does not suck; I'm the founder, lead architect and technical manager of this project
+* Eclipse [Dynamic Languages Toolkit](http://www.eclipse.org/dltk/) — one of the original contributors of Ruby support
+
+### Small ones:
+
+* [[ProjectSync|eclipse/ProjectSync]] is an Eclipse plugin that helps you keep your Eclipse projects in proper placed on disk
+* [PuTTY+](http://code.google.com/p/puttyplus/) is a modified version of the popular SSH client PuTTY
+* [ujudge](http://code.google.com/p/ujudge/) is a programming contest management and evaluation solution written in Ruby on Rails (requires significant additional effort, which is currently being done by other people)
+* [Eclipse OS X Repackager](http://code.google.com/p/eclipse-osx-repackager/) turns standard Eclipse and Rich Client Platform applications into proper Mac OS X bundles (command-line version runs under any OS)
+* [Eclipse OS X Plugin Installer](http://code.google.com/p/eclipse-osx-plugin-installer/) installs archived plugin sets (the ones you usually download from eclipse.org) into existing Eclipse installations and Eclipse bundles
+* [create-dmg](http://code.google.com/p/create-dmg/) allows unattended creation of Mac OS X DMGs with all the fancies (custom background, icon positioning, icon view mode)
+
+## Miscellaneous
+
+* [[Fun Code|funcode]]

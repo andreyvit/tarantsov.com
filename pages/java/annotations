@@ -1,0 +1,90 @@
+Custom Java Annotations
+=======================
+
+There are a few custom annotations that our team at YourSway is using conventionally. They are used to communicate important type/method/field/etc contract details that are not apparent from a method declaration.
+
+Nullability
+-----------
+
+By our convention `null` is **not** a valid value for method and constructor arguments by default. To denote an argument that does accept `null`s, a <code>@Nullable</code> annotation must be used on the argument.
+
+Sure enough, regardless of any annotations, the arguments still have to be checked inside the method body. The preferred way to do the check is as follows:
+
+	if (name == null)
+		throw new NullPointerException("name is null");
+
+To conveniently insert such checks in Eclipse IDE, please see `npe` template on my [[Eclipse code templates|/eclipse/templates]] page.
+
+Note that it's a bad idea to combine several argument checks into a single `if` statement, because in case of an exception, given a stack trace, you won't be able to tell which argument is invalid.
+
+Please don't try to use `@Nullable` on methods (you won't be able to do it anyway) to communicate the fact that the method might return `null`. Nobody will ever look at the annotation when calling your method. Try to come up with a name that clearly specifies a possibility of a `null` being returned (e.g. `findWindowOrNull`) or just throw an exception instead.
+
+Exception: a getter is allowed to return `null` **iff** it merely return a value that has been passed as an argument to another method of that class (most likely a constructor or a setter), and the argument is annotated with `@Nullable`. Otherwise the same rules apply (and actually please consider turning such getter into something more clever and functional).
+
+Exception Safety
+----------------
+
+By default, all methods are assumed to give a *basic* exception safety guarantee: no matter which exception is raised, no matter where, the state of the class remains consistent (but undefined). In other words, if a method has thrown an exception, the class is now in one of its possible states, though you don't really know which.
+
+A method that contractually gives *full* exception safety guarantee must be annotated with `@FullExceptionSafety`. (*Contractually* means that the full exception safety guarantee is not a side effect of the method implementation that might go away, but is a design goal and the authors promise to keep it.) The full exception safety guarantee reads as follows: if the method throws an exception, the externally visible state of the class remains unchanged.
+
+Multithreading Method Contracts
+-------------------------------
+
+The default contract for every method is that it either must be used from a single thread at a time or must be synchronized externally, and also cannot be reentered from within the same thread. To stress this default contract, `@NonReentrant_SynchronizeExternallyOrUseFromSingleThread` annotation can be used on methods.
+
+Exception: if a method has `synchronized` modifier, `@UseFromAnyThread` contract is assumed.
+
+Other possible contract annotations for methods are:
+
+* `@ExternalSynchronizationRequiredButReentrantFromWithinTheSameThread` is the default contract, but with reentrancy allowed from the same thread
+* `@UseFromUIThread` allows the method to be called from the UI thread only (but reentrancy is disallowed unless `@ReentrantFromTheSameThread` is also specified on the method)
+* `@UseFromCarbonRunLoopThread` allows the method to be called only from the Carbon run loop thread on OS X  (but reentrancy is disallowed unless `@ReentrantFromTheSameThread` is also specified on the method)
+* `@CallFromAnyThread_NonReentrant` allows the method to be called without any synchronization from any thread (but reentrancy from the same thread is disallowed)
+* `@Reentrant_CallFromAnyThread` is the most liberal annotation allowing the method to be called without any synchronization from any thread with reentrancy allowed
+
+Multithreading Field Contracts
+-------------------------------
+
+The default contract for fields is similar to the default contract for methods. There is no concept of field reenterability, so the corresponding default contract annotation is called `SynchronizeExternallyOrUseFromSingleThread`.
+
+Exception 1: if a field has a `final` modifier, it obviously can be read from any thread.
+
+Exception 2: if a field has a `volatile` modifier, `@UseFromAnyThread` contract is assumed.
+
+Other possibilities are:
+
+* `@UseFromUIThread` allows the field to be accessed from the UI thread only
+* `@UseFromCarbonRunLoopThread` allows the field to be accessed only from the Carbon run loop thread on OS X
+* `@SynchronizedWithMonitorOfThis` allows the field to be accessed only when holding a lock on `this` (i.e. from a `synchronized` method or a `synchronized(this)` section)
+* `@SynchronizedWithMonitorOfField` allows the field to be accessed only when holding a lock on the given field (i.e. from a `synchronized(`*field*`)` section)
+* `@UseFromAnyThread` allows the field to be accessed from any thread without any synchronization (obviously this can only be applied to `volatile` fields, and in fact this is the default contract for them)
+
+Field Lifetime
+--------------
+
+The default field lifetime contract is that a field contains a meaningful value throughout the whole lifetime of the class instance. Everyone should stick to this contract if possible.
+
+To handle other (rare) cases, 3 annotations are defined:
+
+* `@MeaningfulWhen("condition")` denotes a field that might not contain a meaningful value unless a certain condition is met
+* `@WhenNotMeaningfulHasUndefinedValue` is the default contract and means that the field can have arbitrary value when the condition defined by `@MeaningfulWhen` is not met
+* `@WhenNotMeaningfulMustHaveValue` specifies that the field must have a specific value when the condition defined by `@MeaningfulWhen` is not met, and a reason why that is needed
+
+These are used as follows:
+
+	@SynchronizedWithMonitorOfField("listener")
+	private boolean recalculationInProgress = false;
+
+	@SynchronizedWithMonitorOfField("listener")
+	@MeaningfulWhen("recalculationInProgress == true")
+	@WhenNotMeaningfulHasUndefinedValue
+	private boolean recalculateAgain = false;
+
+Other Annotations
+-----------------
+
+`@UsedFromJNI` denotes things that are referenced from native (JNI) code. Care must be taken when renaming and moving them (the corresponding JNI code has to be updated).
+
+`@UsedFromReflection` denotes things that are referenced via Java reflection from Java code. Care must be taken when renaming and moving them (the corresponding reflection-based code has to be updated).
+

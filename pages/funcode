@@ -1,0 +1,19 @@
+Fun Code
+========
+
+All the snippets listed here are taken from real production code, developed by me or someone I know (unless stated otherwise).
+
+Pigs (Three Different Ones)
+---------------------------
+
+Features: pigs, humanism.
+
+	File pigsThreeDifferentOnes = new File(animals, source.identifier());
+	File nafNafWithRedTail /* color coding */ = new File(pigsThreeDifferentOnes, "naf-naf");
+	File nifNifWithGreenTail = new File(pigsThreeDifferentOnes, "nif-nif");
+	File nufNuf = new File(pigsThreeDifferentOnes, "nuf-nuf"); // just for symmetry
+
+	...
+    
+	// OBSTAIN FROM killing (SWT bindings for INTERCAL, anyone?)
+	allPigsGoneToHeavenAsOurPersonalSaviorsSoNoOneElseWillBeKilled = true;
