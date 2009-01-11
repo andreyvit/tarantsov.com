@@ -20,7 +20,7 @@ a img { border: none; }
 
 /* global */
 
-body { font-size: 100%; line-height: 1.5; color: #222; font-family: Cambria, Georgia, serif; }
+body { font-size: 100%; line-height: 1.5; color: #222; font-family: Cambria, Georgia, serif; background: #eee; }
 
 /*#body { background: url(grid.png); }*/
 
@@ -44,7 +44,7 @@ body { font-size: 100%; line-height: 1.5; color: #222; font-family: Cambria, Geo
 
 #body { margin: 0em auto; width: 950px; }
 
-#footer { font-size: 0.75em; line-height: 2; margin-top: 6em; text-align: center; }
+#footer { font-size: 0.75em; line-height: 2; margin-top: 4em; text-align: center; margin-bottom: 1.33em; }
 
 /* typography */
 

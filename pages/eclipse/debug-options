@@ -9,7 +9,6 @@ This is a classic tip I've been recommending to all Eclipse developers I know fo
 	private static String HOST_NAME_OVERRIDE = 
 		Platform.getDebugOption("my.plugin.id/someActivity/hostNameOverride");
 
-
 Theoretically after this point you can already set these options by providing some obscure command-line options to the runtime. However this is not the way to go.
 
 ## Step 2. Create `.options` file

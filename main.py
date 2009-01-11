@@ -70,7 +70,7 @@ class BaseHandler(webapp.RequestHandler):
 
 
 ########################################################################################################
-# handlers
+# utilities
 
 META_RE = re.compile(r'^[ ]{0,3}(?P<key>[A-Za-z0-9_-]+):\s*(?P<value>.*)')
 TITLE_RE = re.compile(r'#\s*(.*)')
@@ -106,18 +106,110 @@ def parse_title(lines):
       new_lines.append(line)
   return title, new_lines
   
-def find_page(path, page):
+def find_pages(path, page):
   folder = os.path.join(pages_path, path)
   file = os.path.join(folder, page)
-  if os.path.isdir(file) or os.path.isfile(file):
-    return os.path.join(path, page)
+  result = [os.path.join(path, page)] if os.path.isdir(file) or os.path.isfile(file) else []
   if len(path) > 0:
     pos = path.rfind('/')
     parent = path[0:pos] if pos >= 0 else ''
-    return find_page(parent, page)
+    return find_pages(parent, page) + result
   else:
-    return None
+    return result
+
+def find_page(path, page):
+  data = find_pages(path, page)
+  return data[-1] if len(data) > 0 else None
+
+def read_file(file):    
+  f = open(file)
+  try:
+    content = unicode(f.read(), 'utf-8')
+  finally:
+    f.close()
+  return content
     
+def determine_title(html, meta):
+  if 'title' in meta:
+    return meta['title']
+  t = [None]
+  def title_recorder(m):
+    t[0] = m.group(1)
+    return ''
+  html = re.sub(H1_RE, title_recorder, html)
+  return t[0], html
+    
+def place_links_to_pages(path, html):
+  def page_linker(m):
+    caption = m.group(1)
+    page = m.group(2)
+    url = find_page(path, page)
+    if url:
+      return "<a href=\"/%s/\">%s</a>" % (url, caption)
+    else:
+      return "%s <span style=\"color: red;\">(%s)</span>" % (caption, page)
+  return re.sub(PAGE_LINK_RE, page_linker, html)
+  
+def determine_path_components(path):
+  components = [component('home', '/')]
+  # components = []
+  if len(path) > 0:
+    # components = [component('home', '/')]
+    cur_components = []
+    for c in path.split('/'):
+      cur_components = cur_components + [c]
+      components.append(component(c, "/%s/" % '/'.join(cur_components)))
+  return components
+  
+def relink_images(html):
+  return re.sub('img src="', lambda m: '%s/static/images/' % m.group(), html)
+  
+def textualize(path):
+  file = os.path.join(pages_path, path)
+  if os.path.isdir(file):
+    file = os.path.join(file, 'index')
+  if not os.path.isfile(file):
+    return None, {}
+
+  content = read_file(file)
+  lines = content.split("\n")
+  meta, lines = parse_meta(lines)
+  return "\n".join(lines), meta
+
+def htmlize(path):
+  file = os.path.join(pages_path, path)
+  if os.path.isdir(file):
+    file = os.path.join(file, 'index')
+  if not os.path.isfile(file):
+    return None, {}
+
+  content = read_file(file)
+  lines = content.split("\n")
+  meta, lines = parse_meta(lines)
+  content = "\n".join(lines)
+  
+  html = markdown.markdown(content)
+  html = place_links_to_pages(path, html)
+  html = relink_images(html)
+  return html, meta
+
+def find_and_htmlize(context_path, page):
+  path = find_page(context_path, page)
+  if path:
+    return htmlize(path)
+  else:
+    return None, {}
+    
+def read_options(context_path, page):
+  meta = {}
+  for path in find_pages(context_path, page):
+    text, local_meta = textualize(path)
+    meta.update(**local_meta)
+  return meta
+
+########################################################################################################
+# handlers
+  
 class IndexHandler(BaseHandler):
   @prolog()
   def get(self, path):
@@ -126,61 +218,18 @@ class IndexHandler(BaseHandler):
         path = path[0:-1]
       else:
         self.redirect_and_finish('/%s/' % path)
-    
-    file = os.path.join(pages_path, path)
-    if os.path.isdir(file):
-      file = os.path.join(file, 'index')
-    if not os.path.isfile(file):
+        
+    html, meta = htmlize(path)
+    if not html:
       self.data.update(path = path)
       self.render_and_finish('page-not-found.html')
-    
-    f = open(file)
-    try:
-      content = unicode(f.read(), 'utf-8')
-    finally:
-      f.close()
-    
-    lines = content.split("\n")
-    meta, lines = parse_meta(lines)
-    content = "\n".join(lines)
-    
-    html = markdown.markdown(content)
-    title = None
-    if 'title' in meta:
-      title = meta['title']
-    if not title:
-      t = [title]
-      def title_recorder(m):
-        t[0] = m.group(1)
-        return ''
-      html = re.sub(H1_RE, title_recorder, html)
-      title = t[0]
-    else:
-      title = 'Untitled'
-        
-    def page_linker(m):
-      caption = m.group(1)
-      page = m.group(2)
-      url = find_page(path, page)
-      if url:
-        return "<a href=\"/%s/\">%s</a>" % (url, caption)
-      else:
-        return "%s <span style=\"color: red;\">(%s)</span>" % (caption, page)
       
-    html = re.sub(PAGE_LINK_RE, page_linker, html)
+    title, html = determine_title(html, meta)
+    components = determine_path_components(path)
+    options = read_options(path, 'index')
+    site_title = options['site-title'] if 'site-title' in options else 'Site-Title missing in .options'
     
-    components = [component('home', '/')]
-    # components = []
-    if len(path) > 0:
-      # components = [component('home', '/')]
-      cur_components = []
-      for c in path.split('/'):
-        cur_components = cur_components + [c]
-        components.append(component(c, "/%s/" % '/'.join(cur_components)))
-        
-    html = re.sub('img src="', lambda m: '%s/static/images/' % m.group(), html)
-        
-    self.data.update(title = title, content = html, components = components)
+    self.data.update(title = title, content = html, components = components, site_title = site_title)
     self.render_and_finish('page.html')
 
 url_mapping = [

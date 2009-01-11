@@ -41,9 +41,9 @@ Again, a great debugging aid (instead of leaving the method empty).
 
 ## fire
 
-  for(${ListenerType:elemType(listeners)} ${listener:link} : ${listeners:field(com.yoursway.utils.Listeners)})
-      ${listener}.${method:link};
-  ${cursor}
+        for(${ListenerType:elemType(listeners)} ${listener:link} : ${listeners:field(com.yoursway.utils.Listeners)})
+            ${listener}.${method:link};
+        ${cursor}
 	
 ## lookup
 

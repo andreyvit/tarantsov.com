@@ -1,13 +1,18 @@
-# Welcome
+Site-Title: Andrey Tarantsov's Wiki
+
+Welcome
+=======
 
 I'm the chief technical officer and co-founder of YourSway LLC.
 
-## Site Contents
+Site Contents
+-------------
 
 * [[Eclipse stuff|eclipse]]
 * [[Java stuff|java]], which currently only contains a list of (and the contracts behind) our custom [[Java annotations|java/annotations]]
 
-## Contacts
+Contacts
+--------
 
 Blog: <a href="http://blog.tarantsov.com/">blog.tarantsov.com</a> (in Russian)<br>
 Email: <a href="mailto:andreyvit@gmail.com">andreyvit@gmail.com</a><br>
@@ -19,7 +24,8 @@ Skype ID: andreyvit<br>
 Physical address: Russia, Novosibirsk, 630058, Russkaya 23-21<br>
 Date of birth: 5 Feb, 1986.
 
-## Projects
+Projects
+--------
 
 ### Bigger ones:
 

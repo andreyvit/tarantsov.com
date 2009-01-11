@@ -4,14 +4,14 @@
   <meta content="text/html; charset=UTF-8" http-equiv="Content-Type"/>			
   <link rel="stylesheet" type="text/css" media="screen" href="/static/styles/screen.css" />
   <link rel="stylesheet" type="text/css" media="print" href="/static/styles/print.css" />
-  <title>{% block title %}Untitled{% endblock %}</title>
+  <title>{% block title %}Untitled{% endblock %} — {{ site_title }}</title>
   {% block head %}{% endblock %}
 </head>
 <body>
   
   <div id="header">
     <div class="inside">
-      <h1>Andrey Tarantsov's Wiki</h1>
+      <h1>{{ site_title }}</h1>
       <span id="breadcrumbs">
         {% for c in components %}
         {% if not forloop.first %}
@@ -34,8 +34,6 @@
           <div style="padding: 10px; margin: 10px 0px; background: silver; font-size: bigger;">{{ flash }}</div>
           {% endif %}
         </div> -->
-    
-    <h1>{% block heading %}{% endblock %}</h1>
     
     {% block content %}{% endblock %}
 
