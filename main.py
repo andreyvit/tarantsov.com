@@ -146,9 +146,9 @@ def place_links_to_pages(path, html):
     page = m.group(2)
     url = find_page(path, page)
     if url:
-      return "<a href=\"/%s/\">%s</a>" % (url, caption)
+      return """<a href="/%s/">%s</a>""" % (url, caption)
     else:
-      return "%s <span style=\"color: red;\">(%s)</span>" % (caption, page)
+      return """<span style="color: red;" title="%s">%s</span>""" % (page, caption)
   html = re.sub(PAGE_LINK_RE, page_linker, html)
   html = re.sub(ALT_LINK_RE, page_linker, html)
   return html
@@ -232,6 +232,7 @@ def htmlize_file(path):
   
   content = place_links_to_pages(path, content)
   content = re.sub(r'(?s)(?m)^=+\[sidebyside\]=+(.*?)=+\[/sidebyside\]=+$', format_sidebyside, content)
+  content = re.sub(r'(?m)^<<< ([^>]) >>>', lambda m: """<div class="dropin">%s</div>\n\n""" % m.group(1), content)
   html = markdown.markdown(content)
   html = relink_images(html)
   html = fix_typography(html)

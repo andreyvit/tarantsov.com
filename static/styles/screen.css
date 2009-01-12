@@ -1,10 +1,13 @@
-/* @override http://localhost:4005/static/styles/screen.css */
+/* @override 
+	http://localhost:4005/static/styles/screen.css
+	http://www.tarantsov.com/static/styles/screen.css
+*/
 
 /* reset */
 
 html, body, div, span, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, code, del, dfn, em, img, q, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td { margin: 0; padding: 0; border: 0; font-weight: inherit; font-style: inherit; font-size: 100%; font-family: inherit; vertical-align: baseline; }
 
-body { line-height: 1.5; }
+body { line-height: 1.5; overflow: scroll; }
 
 table { border-collapse: separate; border-spacing: 0; }
 
@@ -48,7 +51,7 @@ body { font-size: 100%; line-height: 1.5; color: #222; font-family: Cambria, Geo
 
 /* typography */
 
-h1, h2, h3, h4, h5, h6 { font-weight: normal; color: #111; }
+h1, h2, h3, h4, h5, h6 { font-weight: normal; color:#111; }
 
 p { margin: 0em 0px 1.5em 0px; line-height: 1.5; }
 
@@ -71,6 +74,8 @@ ul, ol { margin: 0 1.5em 1.5em 1.5em; }
 a.nav, a.nav:visited { color: blue; }
 
 .error { color: red; font-size: smaller; }
+
+.dropin { float: left; position: relative; top: -0.22em; font-size: 4.5em; line-height: 1; width: 0.7em; padding: 0px 0px 0px 2px; }
 
 /* blueprint */
 
