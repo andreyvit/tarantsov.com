@@ -65,3 +65,10 @@ Some smaller projects of mine:
 [PuTTY+](http://code.google.com/p/puttyplus/) is a modified version of the popular SSH client PuTTY
 
 </sidebyside>
+
+
+The Technical Side
+------------------
+
+This site is running off Google App Engine using a custom simple Wiki engine. Pages are stored in the file system in an modified Markdown format. The source code is available at [GitHub](http://github.com/andreyvit/tarantsov-com/), feel free to reuse.
+
