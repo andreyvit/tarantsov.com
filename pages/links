@@ -1,0 +1,15 @@
+Useful Links
+============
+
+
+Objective C Debugging
+---------------------
+
+* [Mac OS X Debugging Magic](http://developer.apple.com/technotes/tn2004/tn2124.html)
+* [Google Objective-C Style Guide](http://google-styleguide.googlecode.com/svn/trunk/objcguide.xml)
+* [LLVM/Clang Static Analyzer](http://clang.llvm.org/StaticAnalysis.html) (works for Objective C)
+
+From Stack Overflow:
+
+* [What are those little Xcode tips & tricks you wish you knew about 2 years ago?](http://stackoverflow.com/questions/146297/what-are-those-little-xcode-tips-tricks-you-wish-you-knew-about-2-years-ago)
+* [What are best practices that you use when writing Objective-C and Cocoa?](http://stackoverflow.com/questions/155964/what-are-best-practices-that-you-use-when-writing-objective-c-and-cocoa#158304)
