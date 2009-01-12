@@ -201,24 +201,24 @@ def split_width_and_margin(num_cols, divider_size = 1, total_cols = 24):
   return col_width, margin_right, last_margin_right
   
 def format_sidebyside_cols(text, col_count):
-  cols = text.split('<col>')
+  cols = re.split(r'(?m)-+\[col\]-+$', text)
   col_width, margin_right, last_margin_right = split_width_and_margin(len(cols), 1)
   
   html = ''
   for col in cols[0:-1]:
-    html += '<div style="float: left; width: %dpx; margin-right: %dpx;">%s</div>' % (col_width, margin_right, col)
-  html += '<div style="float: left; width: %dpx; margin-right: %dpx;">%s</div>' % (col_width, last_margin_right, cols[-1])
+    html += """<div style="float: left; width: %dpx; margin-right: %dpx;">\n\n%s\n\n</div>\n\n""" % (col_width, margin_right, col.strip())
+  html += """<div style="float: left; width: %dpx; margin-right: %dpx;">\n\n%s\n\n</div>\n\n""" % (col_width, last_margin_right, cols[-1].strip())
   return html
   
 def format_sidebyside(m):
   text = m.group(1)
-  rows = text.split('<row>')
+  rows = re.split(r'(?m)^=+\[row\]=+$', text.strip())
   col_count = len(rows[0])
   html = "\n".join([format_sidebyside_cols(row, col_count) for row in rows])
-  html += '<div class="clear"></div>'
+  html += """\n<div class="clear"></div>\n\n"""
   return html
-
-def htmlize(path):
+  
+def htmlize_file(path):
   file = os.path.join(pages_path, path)
   if os.path.isdir(file):
     file = os.path.join(file, 'index')
@@ -231,17 +231,17 @@ def htmlize(path):
   content = "\n".join(lines)
   
   content = place_links_to_pages(path, content)
+  content = re.sub(r'(?s)(?m)^=+\[sidebyside\]=+(.*?)=+\[/sidebyside\]=+$', format_sidebyside, content)
   html = markdown.markdown(content)
   html = relink_images(html)
   html = fix_typography(html)
-  html = re.sub('<clear>', '<div class="clear"></div>', html)
-  html = re.sub('(?s)<sidebyside>(.*?)</sidebyside>', format_sidebyside, html)
+  html = re.sub(r'<clear>', '<div class="clear"></div>', html)
   return html, meta
 
 def find_and_htmlize(context_path, page):
   path = find_page(context_path, page)
   if path:
-    return htmlize(path)
+    return htmlize_file(path)
   else:
     return None, {}
     
@@ -264,7 +264,7 @@ class IndexHandler(BaseHandler):
       else:
         self.redirect_and_finish('/%s/' % path)
         
-    html, meta = htmlize(path)
+    html, meta = htmlize_file(path)
     if not html:
       self.data.update(path = path)
       self.render_and_finish('page-not-found.html')

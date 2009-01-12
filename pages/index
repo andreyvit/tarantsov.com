@@ -21,18 +21,18 @@ Projects
 
 Here at YourSway we are working on two major own products (besides the client work):
 
-<sidebyside>
+=======================================[sidebyside]==========================================
 
 **YourSway IDE** is the first Python, Ruby and PHP IDE that does not suck, which means:<br>
 – type inferencing with metaprogramming support;<br>
 – refactorings and smart error detection;<br>
 – really big effort put into usability.
 
-<col>
+-------------------------------------------[col]---------------------------------------------
 
 **Taskus** is a personal task manager pursuing Jeff Raskin's text-based interaction ideas. It synchronizes with a handful of bug trackers, allowing you to manage all your tasks as a simple text file.
 
-</sidebyside>
+=======================================[/sidebyside]=========================================
 
 Many components of our products are being open-sourced. One of them is “**Static Analysis Done Right**” — an open-source framework for developing feature-rich IDE-friendly static analysis engines in weeks.
 
@@ -40,31 +40,25 @@ I've learned a lot during my work on Eclipse [Dynamic Languages Toolkit](http://
 
 Some smaller projects of mine:
 
-<sidebyside>
-
+=======================================[sidebyside]==========================================
 [Eclipse OS X Repackager](http://www.yoursway.com/free/#repackager) turns standard Eclipse and Rich Client Platform applications into proper Mac OS X bundles (command-line version runs under any OS)
 
-<col>
-
+-------------------------------------------[col]---------------------------------------------
 [Eclipse OS X Plugin Installer](http://code.google.com/p/eclipse-osx-plugin-installer/) installs archived plugin sets (the ones you usually download from eclipse.org) into existing Eclipse installations and Eclipse bundles
 
-<col>
-
+-------------------------------------------[col]---------------------------------------------
 [create-dmg](http://www.yoursway.com/free/#createdmg) allows unattended creation of Mac OS X DMGs with all the fancies (custom background, icon positioning, icon view mode)
 
-<row>
-
+===========================================[row]=============================================
 [ujudge](http://code.google.com/p/ujudge/) is a programming contest management and evaluation solution written in Ruby on Rails (requires significant additional effort, which is currently being done by other people)
 
-<col>
-
+-------------------------------------------[col]---------------------------------------------
 [[ProjectSync|eclipse/ProjectSync]] is an Eclipse plugin that helps you keep your Eclipse projects in proper places on disk
 
-<col>
-
+-------------------------------------------[col]---------------------------------------------
 [PuTTY+](http://code.google.com/p/puttyplus/) is a modified version of the popular SSH client PuTTY
 
-</sidebyside>
+=======================================[/sidebyside]=========================================
 
 
 The Technical Side
