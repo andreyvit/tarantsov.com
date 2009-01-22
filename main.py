@@ -164,8 +164,10 @@ def determine_path_components(path):
       components.append(component(c, "/%s/" % '/'.join(cur_components)))
   return components
   
-def relink_images(html):
-  return re.sub('img src="', lambda m: '%s/static/images/' % m.group(), html)
+def relink_images(html, image_folder):
+  if len(image_folder) > 0 and image_folder[-1] != '/':
+    image_folder = image_folder + "/"
+  return re.sub('img src="', lambda m: '%s/static/images/%s' % (m.group(), image_folder), html)
   
 def textualize(path):
   file = os.path.join(pages_path, path)
@@ -180,7 +182,7 @@ def textualize(path):
   return "\n".join(lines), meta
   
 def fix_typography(html):
-  html = re.sub(u'&laquo;', '«', html)
+  html = re.sub(u'&laquo;', u'«', html)
   html = re.sub(u'<p>«', '<p><font class="hlaquo">&laquo;</font>', html)
   html = re.sub(u' «', '<font class="slaquo"> </font><font class="hlaquo">&laquo;</font>', html)
   html = re.sub(u' \\(', '<font class="sbrace"> </font><font class="hbrace">(</font>', html)
@@ -218,7 +220,39 @@ def format_sidebyside(m):
   html += """\n<div class="clear"></div>\n\n"""
   return html
   
-def htmlize_file(path):
+class format_template(object):
+  
+  def __init__(self, path, options):
+    self.path = path
+    self.options = options
+  
+  def __call__(self, m):
+    name, tail = (m.group(1) + ' ').split(' ', 1)
+    name = name.lower()
+    tail = tail.strip()
+    arg = m.group(2)
+    path = find_page(self.path, name + '.template')
+    if not path:
+      return "[missing template %s]" % name
+      
+    args = dict(arg = arg, tail = tail)
+    html, meta = htmlize_file(path, self.options, args)
+    return html
+
+def format_bold_line(m):
+  return "%s<b>%s</b>" % (m.group(1), m.group(2))
+
+def format_bold(m):
+  return "<b>%s</b>" % m.group(1)
+    
+def format_code(m):
+  html = m.group(2)
+  html = re.sub(r'!!!(.*?)!!!', format_bold, html)
+  html = re.sub(r'(?m)^(\s*)!(.*?)$', format_bold_line, html)
+  html = re.sub(u'…', u'<span style="font-family: sans-serif;">…</span>', html)
+  return "%s%s%s" % (m.group(1), html, m.group(3))
+  
+def htmlize_file(path, options, args = {}):
   file = os.path.join(pages_path, path)
   if os.path.isdir(file):
     file = os.path.join(file, 'index')
@@ -230,19 +264,31 @@ def htmlize_file(path):
   meta, lines = parse_meta(lines)
   content = "\n".join(lines)
   
+  try:
+    image_folder = options['image-folder']
+  except:
+    try:
+      image_folder = meta['image-folder']
+    except:
+      image_folder = ''
+  
+  for key, value in args.iteritems():
+    content = re.sub(r'\{\{%s}}' % key, value, content)
   content = place_links_to_pages(path, content)
   content = re.sub(r'(?s)(?m)^=+\[sidebyside\]=+(.*?)=+\[/sidebyside\]=+$', format_sidebyside, content)
+  content = re.sub(r'(?s)(?m)^=+\[([^]]+)\]=+(.*?)={3,}$', format_template(path, options), content)
   content = re.sub(r'(?m)^<<< ([^>]) >>>', lambda m: """<div class="dropin">%s</div>\n\n""" % m.group(1), content)
   html = markdown.markdown(content)
-  html = relink_images(html)
+  html = relink_images(html, image_folder)
   html = fix_typography(html)
   html = re.sub(r'<clear>', '<div class="clear"></div>', html)
+  html = re.sub(r'(?s)(<pre><code>)(.*?)(</code></pre>)', format_code, html)
   return html, meta
 
-def find_and_htmlize(context_path, page):
+def find_and_htmlize(context_path, page, options):
   path = find_page(context_path, page)
   if path:
-    return htmlize_file(path)
+    return htmlize_file(path, options)
   else:
     return None, {}
     
@@ -264,15 +310,16 @@ class IndexHandler(BaseHandler):
         path = path[0:-1]
       else:
         self.redirect_and_finish('/%s/' % path)
+
+    options = read_options(path, 'index')
         
-    html, meta = htmlize_file(path)
+    html, meta = htmlize_file(path, options)
     if not html:
       self.data.update(path = path)
       self.render_and_finish('page-not-found.html')
       
     title, html = determine_title(html, meta)
     components = determine_path_components(path)
-    options = read_options(path, 'index')
     site_title = options['site-title'] if 'site-title' in options else 'Site-Title missing in .options'
     copyright_year = options['copyright-year']
     copyright_email = options['copyright-email']
