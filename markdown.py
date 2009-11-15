@@ -1798,8 +1798,6 @@ def markdownFromFile(input = None,
 def markdown(text,
              extensions = [],
              safe_mode = False):
-    
-    message(DEBUG, "in markdown.markdown(), received text:\n%s" % text)
 
     extension_names = []
     extension_configs = {}
