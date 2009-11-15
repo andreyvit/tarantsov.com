@@ -20,6 +20,13 @@ Bound to *npe*, allows easy checking of input parameters.
 	@Override
 	public abstract String toString();
 
+## equals
+
+    if (obj == null || obj.getClass() != this.getClass())
+    	return false;
+    ${enclosing_type} that = (${enclosing_type}) obj;
+    return this.${field:field}.equals(that.${field:field});
+
 ## unsup
 
 Again, a great debugging aid (instead of leaving the method empty).
