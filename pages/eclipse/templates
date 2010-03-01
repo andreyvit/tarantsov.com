@@ -2,18 +2,32 @@
 
 These are from Eclipse's Preferences > Java > Editor > Templates.
 
-## color
-
-Often needed when debugging SWT layouts.
-
-	Display.getDefault().getSystemColor(SWT.${color:link(COLOR_RED,COLOR_GREEN,COLOR_BLUE)})
-
 ## npe
 
 Bound to *npe*, allows easy checking of input parameters.
 
 	if (${arg:localVar} == null)
 		throw new ${exception:link(NullPointerException,IllegalArgumentException)}("${arg:localVar} is null");
+
+## retlist
+
+Returns a new ArrayList of a correct general type.
+
+	${return_type} ${result:link} = new Array${return_type}(${cursor});
+	return ${result};
+
+## retmap
+
+Returns a new HashMap of a correct general type.
+
+	${return_type} ${result:link} = new Hash${return_type}(${cursor});
+	return ${result};
+
+## color
+
+Often needed when debugging SWT layouts.
+
+	Display.getDefault().getSystemColor(SWT.${color:link(COLOR_RED,COLOR_GREEN,COLOR_BLUE)})
 
 ## toString
 
