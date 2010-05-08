@@ -23,6 +23,22 @@ Returns a new HashMap of a correct general type.
 	${return_type} ${result:link} = new Hash${return_type}(${cursor});
 	return ${result};
 
+## FOR loops for Java 1.5
+
+"fo": general FOR loop:
+
+	for (${type:elemType(collection)} ${name:newName(type)} : ${collection}) {
+		${cursor}
+	}
+
+"foe": FOR loop over the enties of a given map:
+
+	for (Map.Entry<${keyT:argType(map,0)}, ${valueT:argType(map,1)}> ${entry:link} : ${map:var(java.util.Map)}.entrySet()) {
+		${keyT} ${key:newName(keyT)} = ${entry}.getKey();
+		${valueT} ${value:newName(valueT)} = ${entry}.getValue();
+		${cursor}
+	}
+
 ## color
 
 Often needed when debugging SWT layouts.
