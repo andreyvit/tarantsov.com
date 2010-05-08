@@ -1,0 +1,52 @@
+Image-Folder: web
+
+Xcode-like marks for CoffeeScript in TextMate
+=============================================
+
+Ever wanted to group symbols in TextMate like Xcode's #pragma mark does?
+
+![Screenshot of what we want](xcode-like-tm-marks-result.png)
+
+
+Our goal
+--------
+
+To modify an existing TextMate bundle (CoffeeScript in this case) to recognize some comments as headers. In particular:
+
+1. Transform a line with only hash marks in it (“#######”) into a horizontal line.
+
+2. Center-align a comment starting with two hash marks (“## My Section”).
+
+
+Implementation, Step One
+------------------------
+
+Open Bundle Editor, navigate to CoffeeScript. Add this to the language definition:
+
+	{	name = 'comment.line.coffee.section';
+		match = '(##).*$\n?';
+		captures = { 1 = { name = 'punctuation.definition.comment.coffee'; }; };
+	},
+	
+![Grammar change screenshot](xcode-like-tm-marks-grammar-change.png)
+
+
+Implementation, Step Two
+------------------------
+
+Click “+” » “New Preferences”, set Scope Selector to “comment.line.coffee.section” and paste the following:
+
+	{	showInSymbolList = 1;
+		symbolTransformation = '
+			s/^#*\s*$/——————————————————————————————/;
+			s/^##\s+(.*)$/\t\t\t$1/;
+		';
+	}
+
+![New Bundle Item screenshot](xcode-like-tm-marks-bundle-addition.png)
+
+
+Done
+----
+
+You can now enjoy improved navigation in your huge CoffeeScript file.
