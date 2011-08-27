@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Two Indispensible Email Add-ons (FollowUp.cc &amp; OhLife)"
+title: "Two Indispensable Email Add-ons (FollowUp.cc &amp; OhLife)"
 date: 2011-08-27 16:03
 comments: true
 categories: 
