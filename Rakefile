@@ -5,7 +5,8 @@ require "bundler/setup"
 # Be sure your public key is listed in your server's ~/.ssh/authorized_keys file
 ssh_user       = "andreyvit_tarantsov-com@ssh.phx.nearlyfreespeech.net"
 document_root  = "/home/public"
-deploy_default = "rsync"
+deploy_default = "s3"
+s3_url         = "s3://tarantsov.com/"
 
 # This will be configured for you when you run config_deploy
 deploy_branch  = "gh-pages"
@@ -183,6 +184,11 @@ task :push do
     system "git push origin #{deploy_branch}"
     puts "\n## Github Pages deploy complete"
   end
+end
+
+desc "Deploy website to Amazon S3"
+task :s3 do
+  sh "s3cmd -v -P sync #{public_dir}/ #{s3_url}"
 end
 
 desc "Update configurations to support publishing to root or sub directory"
