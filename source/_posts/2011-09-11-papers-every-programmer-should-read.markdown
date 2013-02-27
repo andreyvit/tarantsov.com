@@ -4,6 +4,7 @@ title: "Papers Every Programmer Should Read"
 date: 2011-09-11 05:42
 comments: true
 categories:
+permalink: /blog/2011/09/papers-every-programmer-should-read/
 ---
 
 None. Academic papers are shitloads of crap. Want to read something? Read some beautiful source code instead.
