@@ -3,7 +3,7 @@ layout: post
 title: "The third definition of open, or How I nearly picked GPL for my product, but ended up simply publishing the source with no license (for now)"
 date: 2012-02-09 16:50
 comments: true
-categories: 
+categories:
 permalink: /blog/2012/02/the-third-definition-of-open/
 ---
 
