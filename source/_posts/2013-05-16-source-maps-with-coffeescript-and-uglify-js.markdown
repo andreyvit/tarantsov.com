@@ -67,7 +67,7 @@ Let's open Chrome Developer Tools again. We can now see the source CoffeeScript 
 
 ![](http://assets.livereload.com/WorkflowThu02-images/ChromeDevTools-debugging-CoffeeScript.png)
 
-That's pretty much.
+That's it.
 
 If you're running a web app server like Rails, Django or Node.js, there is an additional step for you because you need to make sure that the map files and CoffeeScript source files are exposed to the web browser. Rails apps can use [coffee-rails-source-maps gem](https://github.com/markbates/coffee-rails-source-maps),  otherwise Google for your framework name plus “source maps”.
 
