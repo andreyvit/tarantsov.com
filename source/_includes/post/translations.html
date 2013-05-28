@@ -1,0 +1,6 @@
+{% if page.translations %}
+<p class="meta">
+  Contributed translations: you can read this article in
+  {% for translation in page.translations %}<a href="{{ translation.url }}" rel="nofollow">{{ translation.language }}</a>{% unless forloop.last %}, {% endunless %}{% endfor %}.
+</p>
+{% endif %}

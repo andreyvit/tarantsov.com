@@ -5,6 +5,9 @@ date: 2012-02-23 19:45
 comments: true
 categories: WorkflowThu
 permalink: /blog/2012/02/sublime-text-workflow-that-beats-coda-and-espresso/
+translations:
+  - language: Spanish
+    url: http://www.webhostinghub.com/support/es/misc/un-workflow-de-texto
 ---
 
 Welcome to the new #WorkflowThu series which helps web developers try new great things.
@@ -161,4 +164,4 @@ As soon as you save the file, Ctrl-S starts working. (The default shortcut works
 
 You can Google many more plugins and tricks for Sublime Text. Thanks for watching (err, reading), and see you next week!
 
-(Be sure to subscribe to this blog if you don't want to miss future screencasts. Or [subscribe via email](/workflow-thursday-subscribe/).)
+Be sure to subscribe to this blog if you don't want to miss future screencasts. Or <a href="/workflow-thursday-subscribe/">subscribe via email</a>.
