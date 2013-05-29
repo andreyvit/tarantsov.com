@@ -3,7 +3,6 @@ layout: post
 title: "7-minute Guide to Source Maps With CoffeeScript and Uglify.js"
 date: 2013-05-16 17:33
 comments: true
-draft: true
 categories: WorkflowThu
 permalink: /WorkflowThu/source-maps-with-coffeescript-and-uglify-js/
 ---
