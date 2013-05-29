@@ -4,7 +4,7 @@ title: "Two Indispensable Email Add-ons (FollowUp.cc &amp; OhLife)"
 date: 2011-08-27 16:03
 comments: true
 categories:
-permalink: /blog/2011/08/two-indispensable-email-add-ons-followup-cc-and-ohlife/
+permalink: /blog/2011/08/two-indispensable-email-add-ons-followup-cc-and-ohlife
 ---
 
 Of all the personal planning tools I have tried, the only one sticked and is measurably improving my daily life of a freelance software developer: [FollowUp.cc](http://www.followup.cc/faq.php).

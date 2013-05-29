@@ -4,6 +4,7 @@ title: "Underscore.js Cheatsheet"
 date: 2013-02-27 11:28
 comments: true
 categories: cheatsheet Underscore.js
+permalink: /underscore-js-cheatsheet/
 ---
 
 Underscore.js is an awesome utility library for pretty much every project. I've made this cheatsheet to have a quick refresher handy.
