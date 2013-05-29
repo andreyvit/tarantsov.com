@@ -4,7 +4,7 @@ title: "Sublime Text Workflow That Beats Coda and Espresso"
 date: 2012-02-23 19:45
 comments: true
 categories: WorkflowThu
-permalink: /blog/2012/02/sublime-text-workflow-that-beats-coda-and-espresso
+permalink: /blog/2012/02/sublime-text-workflow-that-beats-coda-and-espresso/
 translations:
   - language: Spanish
     url: http://www.webhostinghub.com/support/es/misc/un-workflow-de-texto

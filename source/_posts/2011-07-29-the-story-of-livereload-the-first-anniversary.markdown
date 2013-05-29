@@ -4,7 +4,7 @@ title: "The Story of LiveReload: The First Anniversary"
 date: 2011-07-29 04:22
 comments: true
 categories: LiveReload
-permalink: /blog/2011/07/the-story-of-livereload-the-first-anniversary
+permalink: /blog/2011/07/the-story-of-livereload-the-first-anniversary/
 ---
 
 In the summer of 2010 we were hard at work implementing [a startup idea](http://www.mockko.com/). That did not go very far (yet?), but it did give birth to an [unrelated worthy tool](http://livereload.com/) used and praised by many people.

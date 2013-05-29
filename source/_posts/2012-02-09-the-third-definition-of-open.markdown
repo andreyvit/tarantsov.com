@@ -4,7 +4,7 @@ title: "The third definition of open, or How I nearly picked GPL for my product,
 date: 2012-02-09 16:50
 comments: true
 categories:
-permalink: /blog/2012/02/the-third-definition-of-open
+permalink: /blog/2012/02/the-third-definition-of-open/
 ---
 
 There is an urge that every hacker has: to share whatever he creates.
