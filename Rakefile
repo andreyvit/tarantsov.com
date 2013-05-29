@@ -162,6 +162,15 @@ desc "Default deploy task"
 task :deploy => "#{deploy_default}" do
 end
 
+desc "Check all external links"
+task :check_links do
+  require 'link_checker'
+  LinkChecker.new(
+    :target => 'public'
+    # :options => { :no_warnings => true }
+  ).check_uris
+end
+
 desc "Deploy website via rsync"
 task :rsync do
   puts "## Deploying website via Rsync"
