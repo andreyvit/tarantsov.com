@@ -203,10 +203,11 @@ The next time we'll dig into what makes Sublime Text great.
 
 <img src="http://assets.livereload.com/WorkflowThu03-images/WorkflowThu04-preview.png" width="800" height="450">
 
-Other episodes of WorkflowThu:
+All episodes of WorkflowThu:
 
 * Ep. 01: [Sublime Text Workflow That Beats Coda and Espresso](/blog/2012/02/sublime-text-workflow-that-beats-coda-and-espresso/)
 * Ep. 02: [7-minute Guide to Source Maps With CoffeeScript and Uglify.js](/WorkflowThu/source-maps-with-coffeescript-and-uglify-js/)
+* Ep. 03: [STOP SAVE FOR WEB](/WorkflowThu/stop-save-for-web/)
 
 [Click here to subscribe!](/workflow-thursday-subscribe/)
 

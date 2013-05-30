@@ -134,7 +134,10 @@ Note: I promise there will be episodes that don't feature LiveReload. :-) I will
 
 ![](http://assets.livereload.com/WorkflowThu02-images/WorkflowThu03-sneak-peek.png)
 
+All episodes of WorkflowThu:
 
-P.S. If you're excited, [you should subscribe here!](/workflow-thursday-subscribe/)
+* Ep. 01: [Sublime Text Workflow That Beats Coda and Espresso](/blog/2012/02/sublime-text-workflow-that-beats-coda-and-espresso/)
+* Ep. 02: [7-minute Guide to Source Maps With CoffeeScript and Uglify.js](/WorkflowThu/source-maps-with-coffeescript-and-uglify-js/)
+* Ep. 03: [STOP SAVE FOR WEB](/WorkflowThu/stop-save-for-web/)
 
-P.P.S. Sharing this article with your friends would be very nice, too.
+[Click here to subscribe!](/workflow-thursday-subscribe/)

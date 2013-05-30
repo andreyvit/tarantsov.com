@@ -164,4 +164,10 @@ As soon as you save the file, Ctrl-S starts working. (The default shortcut works
 
 You can Google many more plugins and tricks for Sublime Text. Thanks for watching (err, reading), and see you next week!
 
-Be sure to subscribe to this blog if you don't want to miss future screencasts. Or <a href="/workflow-thursday-subscribe/">subscribe via email</a>.
+All episodes of WorkflowThu:
+
+* Ep. 01: [Sublime Text Workflow That Beats Coda and Espresso](/blog/2012/02/sublime-text-workflow-that-beats-coda-and-espresso/)
+* Ep. 02: [7-minute Guide to Source Maps With CoffeeScript and Uglify.js](/WorkflowThu/source-maps-with-coffeescript-and-uglify-js/)
+* Ep. 03: [STOP SAVE FOR WEB](/WorkflowThu/stop-save-for-web/)
+
+[Click here to subscribe!](/workflow-thursday-subscribe/)
