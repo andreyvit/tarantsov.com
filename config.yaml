@@ -1,0 +1,23 @@
+defaultContentLanguage: en
+defaultContentLanguageInSubdir: false
+
+frontmatter:
+  date:
+    - :filename
+    - date
+
+baseURL: "https://draft.tarantsov.com/"
+languages:
+  en:
+    title: "Andrey Tarantsov's Stories"
+    copyright: "Written by Andrey in 2018."
+    weight: 1
+  ru:
+    title: "Истории Андрея Таранцова"
+    copyright: "Создано Андреем в 2018."
+    weight: 2
+
+preserveTaxonomyNames: true
+
+taxonomies:
+  story: stories
