@@ -17,6 +17,10 @@ languages:
     copyright: "Создано Андреем в 2018."
     weight: 2
 
+permalinks:
+  stories: /:year/:month/:slug/
+  posts: /:year/:month/:slug/
+
 preserveTaxonomyNames: true
 
 taxonomies:
