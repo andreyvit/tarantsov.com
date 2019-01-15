@@ -1,5 +1,8 @@
 ---
 title: "Sandbox"
+cta:
+    title: "Sign up for a Tactical Roadmapping Session"
+    href: "/roadmapping/"
 ---
 
 Will get your MVP launched in a month. How do I know? Because I’ve launched multiple, for clients ranging from tiny startups to the largest US companies.
@@ -16,7 +19,7 @@ I’ll build a **pragmatic** system that can *grow over time*, and my team can h
 
 We’ll get started with a Tactical Roadmapping session. Over a couple of days, I’ll work with you closely to evaluate your idea, define the minimum viable product, and spell out the exact execution steps and the timeline.
 
-{{% cta title="Sign up for a Tactical Roadmapping Session" href="/roadmapping/" %}}
+{{% cta %}}
 
 ## FAQ
 
@@ -57,3 +60,5 @@ We’ll work together to figure out what your project actually needs, and will b
 ### Is there something you don’t do?
 
 We won’t do 3D games and anything illegal. We may reject projects on moral grounds as well, so won’t help you chase down dissidents in a totalitarian regime.
+
+{{% cta %}}
