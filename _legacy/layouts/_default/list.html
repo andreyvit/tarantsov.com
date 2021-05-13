@@ -1,0 +1,16 @@
+{{ define "main" }}
+{{ .Content }}
+
+<main>
+{{ range .Pages }}
+<article>
+    <header>
+        <h2><span class="date">{{ .Date.Format "Jan 2" }}</span> <a href="{{ .Permalink }}">{{ .Title }}</a>{{ if .Draft }} <span class="draft">DRAFT</span>{{ end }}</h2>
+    </header>
+    <div class="content">
+        {{ .Content }}
+    </div>
+</article>
+{{ end }}
+</main>
+{{end}}

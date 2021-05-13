@@ -1,0 +1,18 @@
+# generic
+.DS_Store
+
+# Jekyll
+.bundle
+.sass-cache
+_gist_cache
+_code_cache
+_deploy
+public
+source/_stash
+source/stylesheets/screen.css
+vendor
+
+# Hugo
+/public/
+/resources/
+_deploy/secrets.sh

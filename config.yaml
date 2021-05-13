@@ -9,19 +9,9 @@ frontmatter:
 baseURL: "https://draft.tarantsov.com/"
 languages:
   en:
-    title: "Andrey Tarantsov's Stories"
-    copyright: "Written by Andrey in 2018."
+    title: "Andrey Tarantsov on cutting-edge tech and beautiful tools"
+    copyright: "By Andrey Tarantsov in 2018–2021."
     weight: 1
-  ru:
-    title: "Истории Андрея Таранцова"
-    copyright: "Создано Андреем в 2018."
-    weight: 2
 
 permalinks:
-  stories: /:year/:month/:slug/
   posts: /:year/:month/:slug/
-
-preserveTaxonomyNames: true
-
-taxonomies:
-  story: stories

@@ -1,3 +1,4 @@
+{{ $cta := index $.Page.Params.cta (default "primary" (.Get 0)) -}}
 <div class="cta">
-    <header><a href="{{ $.Page.Params.cta.href }}">{{ $.Page.Params.cta.title }}</a></header>
+    <header><a href="{{ $cta.href }}">{{ $cta.title }}</a></header>
 </div>
