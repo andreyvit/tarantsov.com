@@ -18,9 +18,10 @@ sudo mv -T "/srv/tarantsov-www/upcoming" "/srv/tarantsov-www/current"
 echo "▸ Caddyfile"
 sudo install -m644 -groot -oroot /dev/stdin /srv/tarantsov-www/Caddyfile <<EOF
 tarantsov.com {
-    root /srv/tarantsov-www/current
-    tls andrey@tarantsov.com
+    root * /srv/tarantsov-www/current
+    file_server
 }
 EOF
 
+/srv/caddy/bin/caddy reload --config /etc/Caddyfile
 echo "✓ all done"

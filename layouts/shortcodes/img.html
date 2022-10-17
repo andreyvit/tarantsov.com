@@ -1,0 +1,6 @@
+{{ $name := default "" (.Get "global") }}
+{{ $class := default "" (.Get "class") }}
+{{ $alt := default "" (.Get "alt") }}
+{{ with resources.Get $name -}}
+<img class="{{$class}}" src="{{ .RelPermalink }}" alt="{{$alt}}">
+{{- end }}

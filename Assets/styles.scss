@@ -90,3 +90,27 @@ p.lead {
         font-weight: 400;
     }
 }
+
+img.hero {
+    display: block;
+    margin: 1em auto;
+    height: 50vh;
+}
+
+.textnav {
+    padding-bottom: 1em;
+    margin-bottom: 1em;
+    border-bottom: 1px solid #eee;
+}
+.textnav--hero {
+    margin-top: 2em;
+    padding-bottom: 0;
+    margin-bottom: 0;
+    border-bottom: none;
+}
+.textnav__item {
+    margin-right: 0.1em;
+}
+.textnav__item--active {
+    font-weight: bold;
+}

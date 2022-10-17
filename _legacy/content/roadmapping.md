@@ -2,6 +2,7 @@
 title: "Tactical Roadmapping"
 subtitle: "Reduce risk by learning the time, cost, and even value for your next project — before you start!"
 cta:
+  primary:
     title: "Apply to Work Together"
     href: "mailto:andrey+urgent@tarantsov.com?subject=Roadmapping"
 ---
@@ -113,15 +114,17 @@ Additionally, you can rest easily known that my recommendations on how you shoul
 
 A ‘free proposal’ without necessary research is, at best, guesswork. At worst, it could be like going hiking on a new trail without a map: at best, it takes twice as long and costs more than expected.
 
+
 ## Take action now
 
-Roadmapping Projects are only $2000.
+Roadmapping Projects are only $3000.
 
 If you want a plan that will help us both understand the right steps to take to help you achieve the outcomes you’re looking for, you’ve come to the right place.
 
 A Roadmapping Project is an easy way for us to review the outcomes you want to achieve and discuss the options for you to get there.
 
-## I only work with one new client each month
+
+## I only work with a couple new clients a year
 
 ...and the only way to get started is with a Roadmapping Project.
 

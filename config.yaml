@@ -15,3 +15,12 @@ languages:
 
 permalinks:
   posts: /:year/:month/:slug/
+
+# menu:
+#   main:
+#     - name: Tools and workflows are my passion
+#       weight: 30
+#       params:
+#         linked: "Tools and workflows"
+#         suffix: " are my passion,"
+#     
