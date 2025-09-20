@@ -1,0 +1,34 @@
+[
+  {
+    "text": "Hi.",
+    "item": "index",
+  },
+  {
+    "text": "[I'm] Andrey Tarantsov.",
+    // "item": "about",
+  },
+  {
+    "text": "I [build software] that fast-moving businesses run on.",
+    "item": "services",
+  },
+  {
+    "text": "[Productivity tools and workflows] are my passion,",
+    // "item": "passion",
+  },
+  {
+    "text": "as well as helping makers and creatives [do their best work].",
+    "item": "bestwork",
+  },
+  {
+    "text": "I've made [LiveReload].",
+    // "item": "livereload",
+  },
+  // {
+  //   "text": "and am building [Deep Work Buddy].",
+  //   "item": "deepworkbuddy",
+  // },
+  {
+    "text": "[Get in touch].",
+    "item": "contact",
+  },
+]

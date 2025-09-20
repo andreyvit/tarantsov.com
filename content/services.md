@@ -1,20 +1,13 @@
----
-layout: home
-menu:
-  main:
-    weight: 20
-    name: "I build software that businesses run on."
-    params:
-      prefix: "I "
-      linked: "build software"
-      suffix: " that fast-moving businesses run on."
-cta:
-  primary:
-    title: Working with me starts here
-    href: http://example.com/
----
+{
+  "template": "main",
+  "cta": {
+    "primary": {
+      "title": "Working with me starts here",
+      "href": "http://example.com/"
+    }
+  }
+}
 
-{{<textnav menu="main">}}
 
 ## Fast-moving businesses are my clients
 
@@ -51,4 +44,4 @@ Then we'll do a deep dive into your project in a _tactical roadmapping session_.
 
 Then you can use my _turnkey development service_ to bring the best execution to our excellent plan.
 
-{{< cta >}}
+<x-cta></x-cta>

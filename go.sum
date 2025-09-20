@@ -1,0 +1,4 @@
+github.com/andreyvit/jsonfix v1.1.0 h1:GSkO7REEbgpSb3TiapGaOLJBZrgrlqacdcnYAeEKS4M=
+github.com/andreyvit/jsonfix v1.1.0/go.mod h1:D+50dQUMcVE3/aO6IUkCiqYc44JrYPlJpdBGxVqiBhQ=
+github.com/gomarkdown/markdown v0.0.0-20250810172220-2e2c11897d1a h1:l7A0loSszR5zHd/qK53ZIHMO8b3bBSmENnQ6eKnUT0A=
+github.com/gomarkdown/markdown v0.0.0-20250810172220-2e2c11897d1a/go.mod h1:JDGcbDT52eL4fju3sZ4TeHGsQwhG9nbDV21aMyhwPoA=

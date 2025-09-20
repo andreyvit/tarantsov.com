@@ -1,17 +1,7 @@
----
-layout: home
-menu:
-  main:
-    identifier: bestwork
-    name: Helping makers and creatives do their best work
-    weight: 33
-    params:
-      prefix: "as well as helping makers and creatives "
-      linked: "do their best work"
-      suffix: "."
----
-
-{{<textnav menu="main">}}
+{
+  "title": "Helping makers and creatives do their best work",
+  "template": "main",
+}
 
 Let me define productivity first, and then tell you why I'm so excited about it, and why you should be as well.
 
@@ -35,7 +25,7 @@ Best part that makes me super-excited: it only takes months to overhaul your foc
 
 ## But!
 
-You might be thinking of many objections to a very productive lifestyle. These mostly boil down to one of three things: 
+You might be thinking of many objections to a very productive lifestyle. These mostly boil down to one of three things:
 
 1. Wanting to live a balanced, full life.
 2. Desire to avoid a robot-like grinding daily existence.

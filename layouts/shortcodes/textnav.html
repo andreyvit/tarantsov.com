@@ -1,6 +1,0 @@
-{{- $menuName := default "main" (.Get "menu") -}}
-{{ partial "textnav.html" (dict
-    "Page" $.Page
-    "MenuName" $menuName
-    "Variant" (.Get "variant")
-) }}

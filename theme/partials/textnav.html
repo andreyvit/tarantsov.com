@@ -1,0 +1,17 @@
+<nav class="textnav{{if .Variant}} textnav--{{.Variant}}{{end}}">
+{{- range .MainNavItems -}}
+    {{- if not .IsLink -}}
+    <span class="textnav__item">
+        {{.TextPrefix}}{{.TextCore}}{{.TextSuffix}}
+    </span>
+    {{- else if .IsCurrent -}}
+    <span class="textnav__item textnav__item--active">
+        {{.TextPrefix}}{{.TextCore}}{{.TextSuffix}}
+    </span>
+    {{- else -}}
+    <span class="textnav__item">
+        {{.TextPrefix}}<a href="{{.LinkURL}}">{{.TextCore}}</a>{{.TextSuffix}}
+    </span>
+    {{- end -}}
+{{- end -}}
+</nav>

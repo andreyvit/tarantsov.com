@@ -1,4 +1,0 @@
-{{ $cta := index $.Page.Params.cta (default "primary" (.Get 0)) -}}
-<div class="cta">
-    <header><a href="{{ $cta.href }}">{{ $cta.title }}</a></header>
-</div>
