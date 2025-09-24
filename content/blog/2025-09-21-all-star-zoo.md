@@ -1,4 +1,8 @@
-# My all-star zoo, or how I hired Linus Torvalds, Kent Beck, and Rob Pike as AI agents — a senior developer's guide to getting value from AI
+# My all-star zoo, or why I hired Linus Torvalds, Kent Beck, and Rob Pike for my AI team
+
+<x-summary>
+This summer, I transformed **Claude Code** from a frustrating junior assistant into a high-performing engineering team.
+</x-summary>
 
 This summer, I transformed Claude Code from a frustrating junior assistant into a high-performing engineering team. The secret? I gave my AI agents the personalities of legendary developers. The results were extraordinary: Linus Torvalds became my code reviewer, delivering brutal but brilliant feedback. Kent Beck brought test-driven discipline. Rob Pike implemented with pragmatic elegance. Together, they took my AI coding from "smart junior developer" to "solid senior engineer" level—a two order-of-magnitude improvement in both task complexity and output quality.
 

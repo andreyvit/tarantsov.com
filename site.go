@@ -66,7 +66,6 @@ type Item struct {
 	ServePath       string
 	SourcePath      string
 	Frontmatter     *PageFrontmatter
-	Raw             []byte
 	MarkdownDoc     ast.Node
 	TemplateDoc     *template.Template
 	Rendered        []byte
@@ -76,6 +75,8 @@ type Item struct {
 	DateStr         string
 	Ordinal         int // ordering of articles posted on same day
 	DefaultTemplate string
+	Summary         template.HTML
+	WordCount       int
 }
 
 type MainNavItem struct {
@@ -126,10 +127,15 @@ type ItemVM struct {
 	item *Item
 }
 
-func (vm *ItemVM) LinkURL() string       { return vm.item.LinkURL }
-func (vm *ItemVM) Title() string         { return vm.item.Frontmatter.Title }
-func (vm *ItemVM) DateStr() string       { return vm.item.DateStr }
-func (vm *ItemVM) PageClasses() []string { return vm.item.Frontmatter.PageClasses }
+func (vm *ItemVM) LinkURL() string        { return vm.item.LinkURL }
+func (vm *ItemVM) Title() string          { return vm.item.Frontmatter.Title }
+func (vm *ItemVM) WordCount() int         { return vm.item.WordCount }
+func (vm *ItemVM) PageClasses() []string  { return vm.item.Frontmatter.PageClasses }
+func (vm *ItemVM) Summary() template.HTML { return vm.item.Summary }
+func (vm *ItemVM) MonthDay() string       { return vm.item.Date.Format("Jan 2") }
+func (vm *ItemVM) Year() string           { return vm.item.Date.Format("2006") }
+func (vm *ItemVM) DateStr() string        { return vm.item.DateStr }
+func (vm *ItemVM) DateISOStr() string     { return vm.item.Date.Format("2006-01-02") }
 
 type SectionName string
 
@@ -258,6 +264,7 @@ func serve(roots *Roots, listenAddr string, isDevMode bool) {
 var tags = map[string]func(*Tag, *Library, *RenderContext) (string, error){
 	"x-textnav": renderTextNav,
 	"x-cta":     renderCTA,
+	"x-include": renderInclude,
 }
 
 func isCurrentItem(item *Item, currentItem *Item) bool {
@@ -322,6 +329,11 @@ func renderCTA(tag *Tag, lib *Library, renderCtx *RenderContext) (string, error)
 		CTA: cta,
 	}
 	return renderPartial(lib, "cta", in)
+}
+
+func renderInclude(tag *Tag, lib *Library, renderCtx *RenderContext) (string, error) {
+	view := tag.Attrs["partial"]
+	return renderPartial(lib, view, &struct{}{})
 }
 
 var navItemTextRe = regexp.MustCompile(`\[(.*)\]`)
@@ -427,19 +439,36 @@ func loadContentItem(fullPath, relPathWithExt string) (*Item, error) {
 	if err != nil {
 		return item, err
 	}
-	item.Raw = raw
 	item.Frontmatter = fm
+
+	summary, raw, err := extractTag(raw, "x-summary")
+	if err != nil {
+		return item, err
+	}
+	if summary != nil {
+		p := parser.NewWithExtensions(parser.CommonExtensions | parser.AutoHeadingIDs | parser.Mmark)
+		s := string(markdown.ToHTML([]byte(summary.Body), p, nil))
+
+		// </p> is optional; omitting helps us add extras to the end
+		// of the last paragraph
+		s = strings.ReplaceAll(s, "</p>", "")
+
+		item.Summary = template.HTML(s)
+	}
 
 	switch item.Ext {
 	case mdExt:
 		p := parser.NewWithExtensions(parser.CommonExtensions | parser.AutoHeadingIDs | parser.Mmark)
-		item.MarkdownDoc = markdown.Parse(item.Raw, p)
+		item.MarkdownDoc = markdown.Parse(raw, p)
 
 		// dump(item.MarkdownDoc, "")
 		title := extractHeading(item.MarkdownDoc)
 		if fm.Title == "" {
 			fm.Title = title
 		}
+
+		item.WordCount = countWords(removeAllTags(string(raw)))
+
 	case htmlExt:
 		t := template.New(relPath)
 		_, err := t.Parse(string(raw))
@@ -476,11 +505,11 @@ func loadContentItem(fullPath, relPathWithExt string) (*Item, error) {
 		yr := must(strconv.Atoi(baseName[m[2]:m[3]]))
 		mn := must(strconv.Atoi(baseName[m[4]:m[5]]))
 		dy := must(strconv.Atoi(baseName[m[6]:m[7]]))
+		extra := baseName[m[8]:m[9]]
 		baseName = baseName[m[1]:]
 		item.Date = time.Date(yr, time.Month(mn), dy, 12, 0, 0, 0, time.UTC)
 		item.DateStr = item.Date.Format("Jan 2, 2006")
 
-		extra := baseName[m[8]:m[9]]
 		if len(extra) > 0 {
 			item.Ordinal = int(extra[0] - 'a')
 		}
@@ -649,6 +678,7 @@ func renderPseudoTags(content template.HTML, lib *Library, renderCtx *RenderCont
 type Tag struct {
 	Name  string
 	Attrs map[string]string
+	Body  string
 }
 
 var startRe = regexp.MustCompile(`<(x-\w+)`)
@@ -670,11 +700,17 @@ func findAndRenderTags(content string, f func(tag *Tag) (string, error)) (string
 		if i < 0 {
 			return "", fmt.Errorf("unclosed <%s>", tag.Name)
 		}
-		i += m[1] + len(endStr)
-		tagXML := content[m[0]:i]
-		content = content[i:]
+		i += m[1]
+		fullTagXml := content[m[0]:i]
+		content = content[i+len(endStr):]
 
-		decoder := xml.NewDecoder(strings.NewReader(tagXML))
+		_, content, ok := strings.Cut(fullTagXml, ">")
+		if !ok {
+			return "", fmt.Errorf("<%s> missing final angular bracket", tag.Name)
+		}
+		tag.Body = strings.TrimSpace(content)
+
+		decoder := xml.NewDecoder(strings.NewReader(fullTagXml))
 		var attrs map[string]string
 		for {
 			tok, err := decoder.Token()
@@ -698,6 +734,32 @@ func findAndRenderTags(content string, f func(tag *Tag) (string, error)) (string
 		result.WriteString(rendered)
 	}
 	return result.String(), nil
+}
+
+func extractTag(content []byte, tag string) (*Tag, []byte, error) {
+	openStr := []byte("<" + tag)
+	o := bytes.Index(content, openStr)
+	if o < 0 {
+		return nil, content, nil
+	}
+
+	closeStr := []byte("</" + tag + ">")
+	c := bytes.Index(content[o:], closeStr)
+	if c < 0 {
+		return nil, content, fmt.Errorf("<%s>: missing closing tag", tag)
+	}
+	c += o
+
+	i := bytes.IndexByte(content[o:], '>')
+	if i < 0 {
+		return nil, content, fmt.Errorf("<%s>: missing final angle bracket", tag)
+	}
+	i += o
+
+	body := string(bytes.TrimSpace(content[i+1 : c]))
+	content = slices.Delete(content, o, c+len(closeStr))
+
+	return &Tag{Name: tag, Body: body}, content, nil
 }
 
 func failed(item *Item, err error) {
@@ -862,4 +924,14 @@ func cmpBool(a, b bool) int {
 		}
 	}
 	return 0
+}
+
+var tagRe = regexp.MustCompile(`<[^>]+>`)
+
+func removeAllTags(s string) string {
+	return tagRe.ReplaceAllLiteralString(s, "")
+}
+
+func countWords(s string) int {
+	return len(strings.Fields(s))
 }

@@ -1,14 +1,39 @@
 {
     "template": "main",
+    "title": "Blog"
 }
 
-<ol>
+<!--<header class="page-header page-header--blog">
+    <h1 class="page-header__title">Zoocoding</h1>
+    <p class="page-header__desc">Whatever I'm excited about and exploring at the moment — which, these days, often is AI coding.</p>
+</header>-->
+
+<header class="page-header page-header--intro">
+    <p>Enjoy these articles while I'm figuring out how to structure this new blog of mine.</p>
+</header>
+
+<div class="blog-list">
     {{range .Site.BlogItems}}
-    <li>
-        <a href="{{.LinkURL}}">
+    <a class="blog-item" href="{{.LinkURL}}">
+        <time class="blog-item__date" datetime="{{.DateISOStr}}">
+            <span class="blog-item__date-day">{{.MonthDay}}</span>
+            <span class="blog-item__date-year">{{.Year}}</span>
+        </time>
+        <h2 class="blog-item__title">
             {{.Title}}
-            ({{.DateStr}})
-        </a>
-    </li>
+        </h2>
+        {{if .Summary}}
+        <div class="blog-item__summary">
+            {{.Summary}}
+            {{if .WordCount}}
+            <span class="blog-item__wordcnt">
+                ({{.WordCount}} words)
+            </span>
+            {{end}}
+        </div>
+        {{end}}
+    </a>
     {{end}}
-</ol>
+</div>
+
+<x-include partial="subscribe"></x-include>

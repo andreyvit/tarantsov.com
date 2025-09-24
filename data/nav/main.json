@@ -20,16 +20,30 @@
     "item": "bestwork",
   },
   {
-    "text": "I've made [LiveReload].",
-    // "item": "livereload",
+    "text": "I am the CTO of [Bubblehouse],",
+    "item": "bubblehouse",
+  },
+  {
+    "text": "we are fully remote and",
+  },
+  {
+    "text": "we're [hiring] pragmatic principal developers.",
+    "item": "hiring",
   },
   // {
   //   "text": "and am building [Deep Work Buddy].",
   //   "item": "deepworkbuddy",
   // },
   {
-    "text": "I write a [blog called Zoocoding].",
+    "text": "I write [Zoocoding], a blog for developers committed to improving their craft,",
     "item": "blog",
+  },
+  {
+    "text": "covering topics like workflows, AI coding, productivity, and tools.",
+  },
+  {
+    "text": "I've built [LiveReload].",
+    // "item": "livereload",
   },
   {
     "text": "[Get in touch].",
