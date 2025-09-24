@@ -1,7 +1,8 @@
 server=rhodes.tarantsov.com
 
 ship:
-	hugo --minify
+	rm -rf public
+	go run . -w
 	rsync -avz --delete public/ "$(server):~/tarantsov-www/"
 	ssh $(server) bash -s -- <_deploy/deploy.sh
 

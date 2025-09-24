@@ -4,12 +4,12 @@
     <span class="textnav__item">
         {{.TextPrefix}}{{.TextCore}}{{.TextSuffix}}
     </span>
-    {{- else if .IsCurrent -}}
-    <span class="textnav__item textnav__item--active">
-        {{.TextPrefix}}{{.TextCore}}{{.TextSuffix}}
-    </span>
     {{- else -}}
-    <span class="textnav__item">
+    <span class="
+        textnav__item
+        {{if .IsCurrent}} textnav__item--current {{end}}
+        {{if .IsActive}} textnav__item--active {{end}}
+    ">
         {{.TextPrefix}}<a href="{{.LinkURL}}">{{.TextCore}}</a>{{.TextSuffix}}
     </span>
     {{- end -}}

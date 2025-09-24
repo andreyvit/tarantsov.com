@@ -1,7 +1,8 @@
 {
-  "title": "Helping makers and creatives do their best work",
   "template": "main",
 }
+
+# Helping makers and creatives do their best work
 
 Let me define productivity first, and then tell you why I'm so excited about it, and why you should be as well.
 

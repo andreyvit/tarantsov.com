@@ -69,6 +69,7 @@ h1 {
     font-size: 2rem;
     margin: 1rem 0 1rem;
     font-weight: 400;
+    line-height: 1.33;
 }
 h2 {
     text-align: center;
@@ -180,6 +181,12 @@ img.hero {
 .textnav__item {
     margin-right: 0.1em;
 }
+.textnav__item--current > a {
+    border-bottom: none;
+}
 .textnav__item--active {
     font-weight: bold;
+}
+.textnav__item--active > a {
+    color: inherit;
 }

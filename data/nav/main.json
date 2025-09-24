@@ -4,7 +4,7 @@
     "item": "index",
   },
   {
-    "text": "[I'm] Andrey Tarantsov.",
+    "text": "I'm [Andrey Tarantsov].",
     // "item": "about",
   },
   {
@@ -27,6 +27,10 @@
   //   "text": "and am building [Deep Work Buddy].",
   //   "item": "deepworkbuddy",
   // },
+  {
+    "text": "I write a [blog called Zoocoding].",
+    "item": "blog",
+  },
   {
     "text": "[Get in touch].",
     "item": "contact",

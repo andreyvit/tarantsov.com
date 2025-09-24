@@ -13,13 +13,18 @@ import (
 	"maps"
 	"net/http"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"slices"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/andreyvit/jsonfix"
 	"github.com/gomarkdown/markdown"
+	"github.com/gomarkdown/markdown/ast"
+	"github.com/gomarkdown/markdown/html"
 	"github.com/gomarkdown/markdown/parser"
 )
 
@@ -34,6 +39,7 @@ type Library struct {
 	Items            []*Item
 	ItemsByServePath map[string]*Item
 	ItemsByName      map[string]*Item
+	ItemsBySection   map[SectionName][]*Item
 
 	Templates map[string]*Template
 	Layouts   map[string]*Template
@@ -54,15 +60,22 @@ type ErrSink interface {
 }
 
 type Item struct {
-	Name        string
-	Ext         string
-	Error       error
-	ServePath   string
-	SourcePath  string
-	Frontmatter *Frontmatter
-	Raw         []byte
-	Rendered    []byte
-	LinkURL     string
+	Name            string
+	Ext             string
+	Error           error
+	ServePath       string
+	SourcePath      string
+	Frontmatter     *PageFrontmatter
+	Raw             []byte
+	MarkdownDoc     ast.Node
+	TemplateDoc     *template.Template
+	Rendered        []byte
+	LinkURL         string
+	Section         SectionName
+	Date            time.Time
+	DateStr         string
+	Ordinal         int // ordering of articles posted on same day
+	DefaultTemplate string
 }
 
 type MainNavItem struct {
@@ -81,12 +94,13 @@ type Template struct {
 	Templ *template.Template
 }
 
-type Frontmatter struct {
+type PageFrontmatter struct {
 	Title       string          `json:"title"`
 	Template    string          `json:"template"`
 	Layout      string          `json:"layout"`
 	PageClasses []string        `json:"page_classes"`
 	CTAs        map[string]*CTA `json:"cta"`
+	Path        string          `json:"path"`
 }
 
 type CTA struct {
@@ -98,11 +112,30 @@ type RenderContext struct {
 	Item *Item
 }
 
-type LayoutInput struct {
-	Title       string
-	PageClasses []string
-	Content     template.HTML
+type PageVM struct {
+	*ItemVM
+	Site    *SiteVM
+	Content template.HTML
 }
+
+type SiteVM struct {
+	BlogItems []*ItemVM
+}
+
+type ItemVM struct {
+	item *Item
+}
+
+func (vm *ItemVM) LinkURL() string       { return vm.item.LinkURL }
+func (vm *ItemVM) Title() string         { return vm.item.Frontmatter.Title }
+func (vm *ItemVM) DateStr() string       { return vm.item.DateStr }
+func (vm *ItemVM) PageClasses() []string { return vm.item.Frontmatter.PageClasses }
+
+type SectionName string
+
+const (
+	Blog SectionName = "blog"
+)
 
 const (
 	mdExt   = ".md"
@@ -112,15 +145,21 @@ const (
 
 var contentExts = []string{mdExt, htmlExt}
 
+var filenameDatePrefixRe = regexp.MustCompile(`^(\d{4})-(\d{2})-(\d{2})([a-z]?)-`)
+
 func main() {
+	log.SetFlags(0)
 	log.SetOutput(os.Stderr)
 
 	var rootDir string
+	var outputDir string
 	var listenAddr string
-	var isDevMode bool
+	var isDevMode, isWriteMode bool
 	flag.StringVar(&rootDir, "root", ".", "root directory")
+	flag.StringVar(&outputDir, "o", "public", "output directory")
 	flag.StringVar(&listenAddr, "listen", ":8080", "listen address")
 	flag.BoolVar(&isDevMode, "dev", false, "development mode (reload content from disk)")
+	flag.BoolVar(&isWriteMode, "w", false, "write content to disk instead of serving it")
 	flag.Parse()
 
 	roots := &Roots{
@@ -129,6 +168,57 @@ func main() {
 		AssetsDir:  filepath.Join(rootDir, "assets"),
 		DataDir:    filepath.Join(rootDir, "data"),
 	}
+
+	if isWriteMode {
+		build(roots, func(path string, content []byte) {
+			fn := filepath.Join(outputDir, path)
+			dir := filepath.Dir(fn)
+			log.Printf("+ %s", fn)
+			if err := os.MkdirAll(dir, 0755); err != nil {
+				log.Fatal(err)
+			}
+			if err := os.WriteFile(fn, content, 0644); err != nil {
+				log.Fatal(err)
+			}
+		})
+		log.Printf("✓ build finished")
+	} else {
+		serve(roots, listenAddr, isDevMode)
+	}
+}
+
+func build(roots *Roots, write func(path string, content []byte)) {
+	lib := loadLibrary(roots)
+
+	var failed bool
+	for _, item := range lib.Items {
+		if item.Error != nil {
+			failed = true
+			log.Printf("** failed to build %s: %v", item.ServePath, item.Error)
+		}
+	}
+	if failed {
+		log.Fatal("** errors found.")
+	}
+
+	servePaths := slices.Sorted(maps.Keys(lib.ItemsByServePath))
+	for _, sp := range servePaths {
+		item := lib.ItemsByServePath[sp]
+
+		if strings.HasSuffix(sp, "/") {
+			sp = sp + "index.html"
+		}
+		sp = strings.TrimPrefix(sp, "/")
+		write(sp, item.Rendered)
+	}
+
+	walkDir(roots.AssetsDir, func(fullPath string, relPath string, d fs.DirEntry) {
+		raw := must(os.ReadFile(fullPath))
+		write(path.Join("assets", relPath), raw)
+	})
+}
+
+func serve(roots *Roots, listenAddr string, isDevMode bool) {
 	sharedLib := loadLibrary(roots)
 
 	http.HandleFunc("GET /assets/{path...}", func(w http.ResponseWriter, r *http.Request) {
@@ -159,7 +249,10 @@ func main() {
 		}
 	})
 	log.Printf("Listening on %s", listenAddr)
-	http.ListenAndServe(listenAddr, nil)
+	err := http.ListenAndServe(listenAddr, nil)
+	if err != nil {
+		log.Fatalf("failed to start server: %v", err)
+	}
 }
 
 var tags = map[string]func(*Tag, *Library, *RenderContext) (string, error){
@@ -167,11 +260,20 @@ var tags = map[string]func(*Tag, *Library, *RenderContext) (string, error){
 	"x-cta":     renderCTA,
 }
 
+func isCurrentItem(item *Item, currentItem *Item) bool {
+	return item == currentItem
+}
+
+func isParentOfActiveItem(item *Item, currentItem *Item) bool {
+	return string(currentItem.Section) == item.Name
+}
+
 func renderTextNav(tag *Tag, lib *Library, renderCtx *RenderContext) (string, error) {
 	type MainNavItemVM struct {
 		*MainNavItem
 		IsLink    bool
 		IsCurrent bool
+		IsActive  bool
 		LinkURL   string
 	}
 	type TextNavInput struct {
@@ -186,7 +288,8 @@ func renderTextNav(tag *Tag, lib *Library, renderCtx *RenderContext) (string, er
 		}
 		if ni.Item != nil {
 			vm.IsLink = true
-			vm.IsCurrent = (ni.Item == renderCtx.Item)
+			vm.IsCurrent = isCurrentItem(ni.Item, renderCtx.Item)
+			vm.IsActive = vm.IsCurrent || isParentOfActiveItem(ni.Item, renderCtx.Item)
 			vm.LinkURL = ni.Item.LinkURL
 		}
 		items = append(items, vm)
@@ -254,12 +357,16 @@ func loadLibrary(roots *Roots) *Library {
 		}
 	}
 
+	siteVM := &SiteVM{
+		BlogItems: wrapItems(lib.ItemsBySection[Blog]),
+	}
+
 	for _, item := range lib.Items {
 		if item.Error != nil {
 			continue
 		}
 		var err error
-		item.Rendered, err = renderItem(item, lib)
+		item.Rendered, err = renderItem(item, lib, siteVM)
 		if err != nil {
 			failed(item, err)
 		}
@@ -271,7 +378,7 @@ func loadLibrary(roots *Roots) *Library {
 func loadContent(contentDir string, lib *Library) {
 	var items []*Item
 	walkDir(contentDir, func(fullPath, relPath string, d fs.DirEntry) {
-		item, err := loadContentFile(fullPath, relPath)
+		item, err := loadContentItem(fullPath, relPath)
 		if err != nil {
 			failed(item, err)
 			return
@@ -282,49 +389,119 @@ func loadContent(contentDir string, lib *Library) {
 	lib.Items = items
 	lib.ItemsByServePath = make(map[string]*Item)
 	lib.ItemsByName = make(map[string]*Item)
+	lib.ItemsBySection = make(map[SectionName][]*Item)
 	for _, item := range items {
 		if item.ServePath != "" {
 			lib.ItemsByServePath[item.ServePath] = item
 		}
 		lib.ItemsByName[item.Name] = item
+
+		lib.ItemsBySection[item.Section] = append(lib.ItemsBySection[item.Section], item)
+	}
+
+	for _, items := range lib.ItemsBySection {
+		slices.SortFunc(items, func(a, b *Item) int {
+			return cmp.Or(
+				-cmpBool(a.Date.IsZero(), b.Date.IsZero()),
+				-a.Date.Compare(b.Date),
+				-cmp.Compare(a.Ordinal, b.Ordinal),
+			)
+		})
 	}
 }
 
-func loadContentFile(fullPath, relPath string) (*Item, error) {
+func loadContentItem(fullPath, relPathWithExt string) (*Item, error) {
 	item := &Item{
 		SourcePath: fullPath,
 	}
 
 	raw := must(os.ReadFile(fullPath))
-	base, ext := parseExt(relPath, contentExts)
+	relPath, ext := parseExt(relPathWithExt, contentExts)
 	if ext == "" {
 		return item, fmt.Errorf("unknown file extension")
 	}
-	item.Name = base
+	item.Name = relPath
 	item.Ext = ext
 
-	raw, fm, err := extractFrontmatter(raw)
+	raw, fm, err := extractFrontmatter[PageFrontmatter](raw)
 	if err != nil {
 		return item, err
 	}
 	item.Raw = raw
 	item.Frontmatter = fm
 
-	var servePath string
-	if s, ok := strings.CutSuffix(base, "index"); ok {
-		if s == "" {
-			servePath = "/"
-		} else {
-			servePath = s + "/"
+	switch item.Ext {
+	case mdExt:
+		p := parser.NewWithExtensions(parser.CommonExtensions | parser.AutoHeadingIDs | parser.Mmark)
+		item.MarkdownDoc = markdown.Parse(item.Raw, p)
+
+		// dump(item.MarkdownDoc, "")
+		title := extractHeading(item.MarkdownDoc)
+		if fm.Title == "" {
+			fm.Title = title
 		}
-	} else {
-		servePath = base + "/"
+	case htmlExt:
+		t := template.New(relPath)
+		_, err := t.Parse(string(raw))
+		if err != nil {
+			return nil, err
+		}
+		item.TemplateDoc = t
+	default:
+		return nil, fmt.Errorf("unknown file extension")
 	}
-	item.ServePath = servePath
+
+	sectionPath, sectionRelPath, ok := strings.Cut(relPath, "/")
+	if !ok {
+		sectionPath, sectionRelPath = "", sectionPath
+	}
+	item.Section = SectionName(sectionPath)
+
+	switch item.Section {
+	case Blog:
+		item.DefaultTemplate = "blog-page"
+		sectionPath = "" // serve blog without a prefix
+	default:
+		item.DefaultTemplate = "main"
+	}
+
+	sectionSubpath, baseName, ok := cutLast(sectionRelPath, "/")
+	if !ok {
+		sectionSubpath, baseName = "", sectionSubpath
+	}
+
+	// log.Printf("relPath = %q => section = %q, sectionRelPath = %q, sectionSubpath = %q, baseName = %q", relPath, section, sectionRelPath, sectionSubpath, baseName)
+
+	if m := filenameDatePrefixRe.FindStringSubmatchIndex(baseName); m != nil {
+		yr := must(strconv.Atoi(baseName[m[2]:m[3]]))
+		mn := must(strconv.Atoi(baseName[m[4]:m[5]]))
+		dy := must(strconv.Atoi(baseName[m[6]:m[7]]))
+		baseName = baseName[m[1]:]
+		item.Date = time.Date(yr, time.Month(mn), dy, 12, 0, 0, 0, time.UTC)
+		item.DateStr = item.Date.Format("Jan 2, 2006")
+
+		extra := baseName[m[8]:m[9]]
+		if len(extra) > 0 {
+			item.Ordinal = int(extra[0] - 'a')
+		}
+	}
+
+	sectionRelPath = path.Join(sectionSubpath, baseName)
+	relPath = path.Join(sectionPath, sectionRelPath)
+
+	// log.Printf("new relPath = %q, sectionRelPath = %q", relPath, sectionRelPath)
+
+	var servePath string
+	if s, ok := strings.CutSuffix(relPath, "index"); ok {
+		servePath = s
+	} else {
+		servePath = relPath
+	}
+	item.ServePath = servePath + "/"
 
 	item.LinkURL = "/" + strings.TrimPrefix(item.ServePath, "/")
 
-	log.Printf("path = %q, name = %q, frontmatter = %s", item.ServePath, item.Name, jsonstr(item.Frontmatter))
+	log.Printf("Item(path = %q, name = %q, section = %q, title = %q)", item.ServePath, item.Name, item.Section, item.Frontmatter.Title)
 	return item, nil
 }
 
@@ -370,14 +547,41 @@ func loadDataFile(fullPath string, v any, sink ErrSink) {
 	}
 }
 
-func renderItem(item *Item, lib *Library) ([]byte, error) {
+func wrapItems(items []*Item) []*ItemVM {
+	vms := make([]*ItemVM, len(items))
+	for i, item := range items {
+		vms[i] = wrapItem(item)
+	}
+	return vms
+}
+
+func wrapItem(item *Item) *ItemVM {
+	return &ItemVM{
+		item: item,
+	}
+}
+
+func renderItem(item *Item, lib *Library, siteVM *SiteVM) ([]byte, error) {
+	in := &PageVM{
+		ItemVM: wrapItem(item),
+		Site:   siteVM,
+	}
+
 	var content template.HTML
 	switch item.Ext {
 	case mdExt:
-		p := parser.NewWithExtensions(parser.CommonExtensions | parser.AutoHeadingIDs | parser.Mmark)
-		content = template.HTML(markdown.ToHTML(item.Raw, p, nil))
+		opts := html.RendererOptions{
+			Flags: html.CommonFlags,
+		}
+		renderer := html.NewRenderer(opts)
+		content = template.HTML(markdown.Render(item.MarkdownDoc, renderer))
 	case htmlExt:
-		content = template.HTML(item.Raw)
+		var buf bytes.Buffer
+		err := item.TemplateDoc.Execute(&buf, in)
+		if err != nil {
+			return nil, err
+		}
+		content = template.HTML(buf.Bytes())
 	default:
 		return nil, fmt.Errorf("unknown file extension")
 	}
@@ -386,13 +590,10 @@ func renderItem(item *Item, lib *Library) ([]byte, error) {
 		Item: item,
 	}
 
-	in := &LayoutInput{
-		Title:       item.Frontmatter.Title,
-		PageClasses: item.Frontmatter.PageClasses,
-	}
+	templ := cmp.Or(item.Frontmatter.Template, item.DefaultTemplate, none)
 
 	in.Content = content
-	content, err := renderTemplate(cmp.Or(item.Frontmatter.Template, none), lib.Templates, in, content)
+	content, err := renderTemplate(templ, lib.Templates, in, content)
 	if err != nil {
 		return nil, err
 	}
@@ -517,6 +718,9 @@ func walkDir(dir string, fn func(fullPath, relPath string, d fs.DirEntry)) {
 		if path == dir {
 			return nil
 		}
+		if d.IsDir() {
+			return nil
+		}
 		rel, err := filepath.Rel(dir, path)
 		if err != nil {
 			return err
@@ -529,16 +733,21 @@ func walkDir(dir string, fn func(fullPath, relPath string, d fs.DirEntry)) {
 	}
 }
 
-func extractFrontmatter(raw []byte) ([]byte, *Frontmatter, error) {
+func extractFrontmatter[T any](raw []byte) ([]byte, *T, error) {
 	const endSep = "\n}\n"
 	raw = bytes.TrimSpace(raw)
-	fm := new(Frontmatter)
+	fm := new(T)
 	if len(raw) > 0 && raw[0] == '{' {
+		lenSep := len(endSep)
 		end := bytes.Index(raw, []byte(endSep))
+		if end < 0 && bytes.HasSuffix(raw, []byte(endSep[:lenSep-1])) {
+			lenSep--
+			end = len(raw) - lenSep
+		}
 		if end < 0 {
 			return nil, nil, fmt.Errorf("frontmatter: missing end")
 		}
-		end += len(endSep)
+		end += lenSep
 
 		err := json.Unmarshal(jsonfix.Bytes(raw[:end]), fm)
 		if err != nil {
@@ -574,4 +783,83 @@ func ensure(err error) {
 
 func jsonstr(v any) string {
 	return string(must(json.Marshal(v)))
+}
+
+func extractHeading(doc ast.Node) string {
+	cn := doc.AsContainer()
+	if cn == nil || len(cn.Children) == 0 {
+		return ""
+	}
+	first := cn.Children[0]
+	if h, ok := first.(*ast.Heading); ok {
+		dump(h, "doc")
+		cn.Children = cn.Children[1:]
+		return collectText(h)
+	}
+	return ""
+}
+
+func dump(node ast.Node, prefix string) {
+	if node == nil {
+		return
+	}
+	dumpSubnode(-1, node, prefix)
+}
+
+func dumpSubnode(index int, node ast.Node, prefix string) {
+	if index < 0 {
+		prefix = cmp.Or(prefix, "D")
+	} else {
+		prefix = fmt.Sprintf("%s.%02d", prefix, index)
+	}
+	log.Printf("%s) %T %v", prefix, node, node)
+	if cn := node.AsContainer(); cn != nil {
+		for i, c := range cn.Children {
+			dumpSubnode(i, c, prefix)
+		}
+	}
+}
+
+func collectText(root ast.Node) string {
+	var buf strings.Builder
+	walkMarkdown(root, func(n ast.Node) {
+		// log.Printf("collectText(%T) meets %T", root, n)
+		if t, ok := n.(*ast.Text); ok {
+			// log.Printf("collectText(%T) = %q", t, t.Literal)
+			buf.Write(t.Literal)
+		}
+	})
+	return buf.String()
+}
+
+func walkMarkdown(node ast.Node, f func(n ast.Node)) {
+	f(node)
+	if cn := node.AsContainer(); cn != nil {
+		for _, c := range cn.Children {
+			walkMarkdown(c, f)
+		}
+	}
+}
+
+// cutLast slices s around the last instance of sep, returning the text before and after sep.
+// The found result reports whether sep appears in s.
+// If sep does not appear in s, cut returns s, "", false.
+func cutLast(s, sep string) (before, after string, found bool) {
+	if i := strings.LastIndex(s, sep); i >= 0 {
+		return s[:i], s[i+len(sep):], true
+	}
+	return s, "", false
+}
+
+func cmpBool(a, b bool) int {
+	if a {
+		if !b {
+			return 1
+		}
+	} else {
+		if b {
+			return -1
+		}
+	}
+	return 0
 }

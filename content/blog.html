@@ -1,0 +1,14 @@
+{
+    "template": "main",
+}
+
+<ol>
+    {{range .Site.BlogItems}}
+    <li>
+        <a href="{{.LinkURL}}">
+            {{.Title}}
+            ({{.DateStr}})
+        </a>
+    </li>
+    {{end}}
+</ol>
