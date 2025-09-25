@@ -101,7 +101,7 @@ type PageFrontmatter struct {
 	Layout      string          `json:"layout"`
 	PageClasses []string        `json:"page_classes"`
 	CTAs        map[string]*CTA `json:"cta"`
-	Path        string          `json:"path"`
+	Permalink   string          `json:"permalink"`
 }
 
 type CTA struct {
@@ -521,7 +521,9 @@ func loadContentItem(fullPath, relPathWithExt string) (*Item, error) {
 	// log.Printf("new relPath = %q, sectionRelPath = %q", relPath, sectionRelPath)
 
 	var servePath string
-	if s, ok := strings.CutSuffix(relPath, "index"); ok {
+	if fm.Permalink != "" {
+		servePath = strings.TrimPrefix(strings.TrimSuffix(fm.Permalink, "/"), "/")
+	} else if s, ok := strings.CutSuffix(relPath, "index"); ok {
 		servePath = s
 	} else {
 		servePath = relPath
