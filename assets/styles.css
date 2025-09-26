@@ -149,6 +149,14 @@ p.lead {
     font-size: 1.33rem;
 }
 
+.table--contact th {
+    text-align: left;
+    padding: 0.5rem 1rem 0.5rem 0;
+}
+.table-header--secondary {
+    font-weight: 300;
+}
+
 .cta {
     display: flex;
     flex-flow: column;

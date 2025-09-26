@@ -8,43 +8,64 @@
     // "item": "about",
   },
   {
-    "text": "I [build software] that fast-moving businesses run on.",
-    "item": "services",
+    "text": "I build tools for people who pursue their dreams.",
   },
   {
-    "text": "[Productivity tools and workflows] are my passion,",
-    // "item": "passion",
-  },
-  {
-    "text": "as well as helping makers and creatives [do their best work].",
-    "item": "bestwork",
-  },
-  {
-    "text": "I am the CTO of [Bubblehouse],",
+    "text": "CTO of [Bubblehouse],",
     "item": "bubblehouse",
   },
   {
-    "text": "we are fully remote and",
+    "text": "maker of [LiveReload],",
+    // "item": "livereload",
   },
   {
-    "text": "we're [hiring] pragmatic principal developers.",
+    "text": "and",
+  },
+  {
+    "text": "a [tools junkie]",
+    // "item": "principles",
+  },
+  {
+    "text": "passionate about [my craft].",
+    "item": "principles",
+  },
+  {
+    "text": "My blog [Zoocoding]",
+    "item": "blog",
+  },
+  {
+    "text": "covers my adventures in AI coding",
+  },
+  {
+    "text": "and beyond.",
+  },
+  {
+    "text": "(Also, Bubblehouse is [hiring] principal developers for a fully-remote job.)",
     "item": "hiring",
   },
+  // {
+  //   "text": "beautiful tools,",
+  // },
+  // {
+  //   "text": "productivity,",
+  // },
+  // {
+  //   "text": "fast-moving businesses,",
+  // },
+  // {
+  //   "text": "AI coding.",
+  // },
+  // {
+  //   "text": "and",
+  // },
+  // {
+  //   "text": "doing one's best work.",
+  //   // "item": "bestwork",
+  // },
   // {
   //   "text": "and am building [Deep Work Buddy].",
   //   "item": "deepworkbuddy",
   // },
-  {
-    "text": "I write [Zoocoding], a blog for developers committed to improving their craft,",
-    "item": "blog",
-  },
-  {
-    "text": "covering topics like workflows, AI coding, productivity, and tools.",
-  },
-  {
-    "text": "I've built [LiveReload].",
-    // "item": "livereload",
-  },
   {
     "text": "[Get in touch].",
     "item": "contact",
