@@ -76,6 +76,7 @@ type Item struct {
 	Ordinal         int // ordering of articles posted on same day
 	DefaultTemplate string
 	Summary         template.HTML
+	RSSSummary      string
 	WordCount       int
 }
 
@@ -133,10 +134,12 @@ func (vm *ItemVM) Title() string          { return vm.item.Frontmatter.Title }
 func (vm *ItemVM) WordCount() int         { return vm.item.WordCount }
 func (vm *ItemVM) PageClasses() []string  { return vm.item.Frontmatter.PageClasses }
 func (vm *ItemVM) Summary() template.HTML { return vm.item.Summary }
+func (vm *ItemVM) RSSSummary() string     { return vm.item.RSSSummary }
 func (vm *ItemVM) MonthDay() string       { return vm.item.Date.Format("Jan 2") }
 func (vm *ItemVM) Year() string           { return vm.item.Date.Format("2006") }
 func (vm *ItemVM) DateStr() string        { return vm.item.DateStr }
 func (vm *ItemVM) DateISOStr() string     { return vm.item.Date.Format("2006-01-02") }
+func (vm *ItemVM) RSSDate() string        { return vm.item.Date.Format(time.RFC1123Z) }
 
 type SectionName string
 
@@ -153,10 +156,11 @@ const (
 const (
 	mdExt   = ".md"
 	htmlExt = ".html"
+	xmlExt  = ".xml"
 	none    = "none"
 )
 
-var contentExts = []string{mdExt, htmlExt}
+var contentExts = []string{mdExt, htmlExt, xmlExt}
 
 var filenameDatePrefixRe = regexp.MustCompile(`^(\d{4})-(\d{2})-(\d{2})([a-z]?)-`)
 
@@ -467,11 +471,11 @@ func loadContentItem(fullPath, relPathWithExt string) (*Item, error) {
 	if summary != nil {
 		p := parser.NewWithExtensions(parser.CommonExtensions | parser.AutoHeadingIDs | parser.Mmark)
 		s := string(markdown.ToHTML([]byte(summary.Body), p, nil))
+		item.RSSSummary = strings.TrimSpace(removeAllTags(s))
 
 		// </p> is optional; omitting helps us add extras to the end
 		// of the last paragraph
 		s = strings.ReplaceAll(s, "</p>", "")
-
 		item.Summary = template.HTML(s)
 	}
 
@@ -488,7 +492,7 @@ func loadContentItem(fullPath, relPathWithExt string) (*Item, error) {
 
 		item.WordCount = countWords(removeAllTags(string(raw)))
 
-	case htmlExt:
+	case htmlExt, xmlExt:
 		t := template.New(relPath)
 		_, err := t.Parse(string(raw))
 		if err != nil {
@@ -547,7 +551,13 @@ func loadContentItem(fullPath, relPathWithExt string) (*Item, error) {
 	} else {
 		servePath = relPath
 	}
-	item.ServePath = servePath + "/"
+
+	if ext == xmlExt {
+		servePath += ext
+	} else {
+		servePath += "/"
+	}
+	item.ServePath = servePath
 
 	item.LinkURL = "/" + strings.TrimPrefix(item.ServePath, "/")
 
@@ -632,6 +642,13 @@ func renderItem(item *Item, lib *Library, siteVM *SiteVM) ([]byte, error) {
 			return nil, err
 		}
 		content = template.HTML(buf.Bytes())
+	case xmlExt:
+		var buf bytes.Buffer
+		err := item.TemplateDoc.Execute(&buf, in)
+		if err != nil {
+			return nil, err
+		}
+		content = template.HTML(`<?xml version="1.0" encoding="UTF-8"?>` + "\n" + buf.String())
 	default:
 		return nil, fmt.Errorf("unknown file extension")
 	}

@@ -1,0 +1,26 @@
+{
+    "content_type": "application/rss+xml",
+    "template": "none",
+    "layout": "none"
+}
+
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>Zoocoding by Andrey Tarantsov</title>
+        <link>https://tarantsov.com/blog/</link>
+        <description>Adventures in AI coding and beyond — whatever I'm excited about and exploring at the moment.</description>
+        <language>en-us</language>
+        <atom:link href="https://tarantsov.com/rss.xml" rel="self" type="application/rss+xml"/>
+        {{range .Site.BlogItems}}
+        <item>
+            <title>{{.Title}}</title>
+            <link>https://tarantsov.com{{.LinkURL}}</link>
+            <guid>https://tarantsov.com{{.LinkURL}}</guid>
+            <pubDate>{{.RSSDate}}</pubDate>
+            {{if .RSSSummary}}
+            <description>{{.RSSSummary}}</description>
+            {{end}}
+        </item>
+        {{end}}
+    </channel>
+</rss>
