@@ -34,10 +34,17 @@
     "item": "blog",
   },
   {
-    "text": "covers my adventures in AI coding",
+    "text": "covers adventures in AI coding",
   },
   {
-    "text": "and beyond.",
+    "text": "and beyond",
+  },
+  {
+    "text": "— latest post:",
+  },
+  {
+    "text": "“[post]”.",
+    "ref": "LATEST_BLOG_POST",
   },
   {
     "text": "(Also, Bubblehouse is [hiring] principal developers for a fully-remote job.)",

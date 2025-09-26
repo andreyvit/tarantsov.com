@@ -80,9 +80,10 @@ type Item struct {
 }
 
 type MainNavItem struct {
-	RawText  string `json:"text"`
-	ItemName string `json:"item"`
-	Item     *Item  `json:"-"`
+	RawText  string  `json:"text"`
+	ItemName string  `json:"item"`
+	RefName  RefName `json:"ref"`
+	Item     *Item   `json:"-"`
 
 	TextPrefix string `json:"-"`
 	TextCore   string `json:"-"`
@@ -141,6 +142,12 @@ type SectionName string
 
 const (
 	Blog SectionName = "blog"
+)
+
+type RefName string
+
+const (
+	LatestBlogPost RefName = "LATEST_BLOG_POST"
 )
 
 const (
@@ -356,6 +363,18 @@ func loadLibrary(roots *Roots) *Library {
 		} else {
 			ni.TextCore = ni.RawText
 		}
+
+		switch ni.RefName {
+		case LatestBlogPost:
+			latest := lib.ItemsBySection[Blog][0]
+			ni.TextCore = latest.Frontmatter.Title
+			ni.Item = latest
+		case "":
+		default:
+			lib.AddError(fmt.Errorf("item %s has unknown ref", jsonstr(ni)))
+			continue
+		}
+
 		ni.FullText = ni.TextPrefix + ni.TextCore + ni.TextSuffix
 
 		if ni.ItemName != "" {
