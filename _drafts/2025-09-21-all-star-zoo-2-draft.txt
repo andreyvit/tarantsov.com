@@ -1,0 +1,141 @@
+# From Claude Code to an All-Star Team: How I Built AI Agents with Personalities
+
+## Introduction: The More Experienced You Are, The Harder It Is to Gain from AI
+
+It's easy to get gains from AI. The less experienced you are, the easier it is for you to get gains from AI. Because just the process of figuring stuff out and coding takes time for you. The more experienced you are, the harder it is to gain benefits from AI for two reasons. First, you're doing more complex tasks. And second, you yourself is much better at executing and you execute much, much faster. The better you are, the faster you execute. Actually, there is a third reason. Your ideas of good code, your intuition of what good code is, is much more developed and much more specific. So, you have a much higher quality bar for AI output.
+
+I'm the CTO of Bubble House and a developer with 25+ years of experience. And as such, it's hard for me to gain from AI coding. This summer has been my challenge to figure out how to make AI work for my cases, for my projects, and my quality standards.
+
+So, this summer I started experimenting with Claude Code. Before that I only vaguely heard about it and did most of my AI coding within tools like Zed and Windsurf and Cursor, and found those to be underwhelming on my typical large production project. However, Claude Code represented a big step up in the complexity of tasks that I could offload to AI.
+
+Of course, we need to say here that very rarely it handles 100% of a task. It's always 90% done and 90% left to do as developers like to say and AI handles that 90% and you're left to do some changes that would be much harder to explain and get AI to finalize rather than do yourself. I still end up spending time. However, I do see increased productivity from this.
+
+Actually, the biggest gain from AI is not even time savings. One of the benefits of using AI for coding when you're sort of a principal developer, right, like super senior developer, is not that it saves you time, but it saves you effort. And you're not always at your 100% mental capacity yourself. Sometimes you're tired, sometimes you didn't sleep well, sometimes you're just ADHD-ing and procrastinating at starting a task. AI is amazing at giving you a great starting point, even if it doesn't finish the task, even if it goes off course, and you have to discard most of what it did, it's sort of, you're not starting from a blank slate. So your mind is already actively engaged by the time you get to coding and it's much, much easier to start. That's a big benefit. And also it saves a lot of mental energy that you spend when doing stupid parts of that. Like every task has hard parts and easy, stupid, straightforward parts. And those straightforward parts, they always take some willpower to do because they're boring. And AI is pretty good at handling boring stuff.
+
+## Step 1: Just Running Claude Code
+
+I started using Claude Code and immediately, it was a step up. However, it still had really could only handle the simplest tasks well enough. Claude Code is immediately much more capable, even without any additions. It's much more capable than sort of cursor style AI coding.
+
+## Step 2: Adding Instructions
+
+Of course, AI coding will get much better the more instructions, examples, and documentation you give. Now, AI is really good at coding by example. So, in the absence of any instructions, the results will of course be dissatisfactory. Now, if your project has very streamlined and repetitive patterns, AI will mostly pick up on those by itself.
+
+I tried writing some instructions for it. By tried I mean I did write instructions, and the results were better.
+
+## Step 3: Getting Claude to Write Its Own Instructions
+
+I got Claude Code to study the code base each area before having it work in a particular area or with a particular kind of feature. I had it explore the code base and write out a documentation file. I created an AI folder, which basically I had a folder with human written documentation.
+
+I found that AI isn't great at writing documentation. Like this is clearly one of the current limitations of AI that it's not great at remembering things, or rather like it will happily write down a lot, but the focus on those things is off all over the place. It misunderstands some parts. It puts weirdly high focus on some areas that are not deserving that, like some particular thing it struggled with in the particular task. And it's not remembering things that are clearly worth remembering. It's not explaining the architecture really well. So it's not great at writing docs.
+
+I found that if I let it update human-written docs, they would immediately get much worse. So it was hard, there is like basically a lot of if I let AI propose changes to real docs, I would then have to spend a lot of time editing those. So I created a separate folder for AI docs. I called it _AI. And then I let it write whatever there. I removed the complete bullshit from there. I removed clear, obvious falsehoods. But aside from that, I don't really edit those files. I'll let AI manage them. So I had Claude write those files and then work on the code base. And that worked better, of course.
+
+## Step 4: Adding a Planning Process with Text Files
+
+But the next frontier for me was getting better performance. Like basically I had to steer it a lot. Because sometimes it would go in the wrong direction. To be fair, I just said, "Hey, here's the task. Go." And it would go and the results were underwhelming just like Claude documentation says if you don't have a planning phase, it will not do great. And it wasn't doing great.
+
+Problem is, I introduced a planning phase. And that was good, but it would forget its plans over time. Like it would do the planning, it would start working, and then it would drift away. Because there was a lot of attention paid towards just the stupidest issues, right? Like it would hallucinate a method name and need to figure out what method to call. So basically, very, very low level problems and behind very low level problems all the high level would be forgotten. Very often even the original user intent would be forgotten, the scope of the task, what we are even doing. And so that was the first frontier to solve.
+
+Just like Claude recommends, instead of having it keep the context in memory, I asked it to write AI_plan.txt and keep it updated throughout the process. So it would write down its initial plan with a list of tasks and a lot of technical details. Then we go implementing. And what I found that, well, often it either forgot to update this file or it really did it quite mechanically so like it would go and update like mark some tasks as complete, but it would not be actively using this file as a reference. It instead would be lazily looking and updating and missing things in the file. Like it would happily rewrite big chunks of this file to describe its most recent direction rather than finding that it has veered off course and that it needs to course correct when what it's doing came in contradiction with what the plans have.
+
+Honestly, a text file didn't do much. It's not a separate step. It was not a step up.
+
+## Step 5: Moving to Subagents
+
+And about the same time, the next frontier was that having it work hard on the tests and code. I couldn't get it to do a workflow that I consider beneficial for it. Like I wanted it to do TDD, test-driven development. I wanted to write a test first. Not just any test, like a test that would fail for the right reasons. Then I wanted it to implement the code to make the test pass, you know, the classical test-driven development.
+
+But it wasn't good at that. Like it forgot to write tests or when it was doing stuff, it was always confused whether it was changing tests or it was changing code. So when there is a bug in the code, it would often change the test or even delete the test or disable the test or like dumb down the test just to make it pass instead of fixing the code. Or when it really needed to write a test, it would instead fix code, like it would write a test incorrectly and then go fixing the code to make the test pass instead of figuring out the test issue.
+
+So those were two biggest problems for me. First was staying focused, keeping high-level context in mind. And of course, the enemy here was compactions, right? If you let Claude just go at writing stuff, it soon runs out of its context window and needs to do compaction. And compaction, while it preserves a lot and it's actually pretty good, it gives equal focus, gives equal importance to both the original stuff and to minuscule details that were completely irrelevant of stuff that happened while it was trying to figure out like how to make a test pass or something like typos and correct method names. So all of that process, all that low-level work was getting just as much attention as the high-level context, and that meant that after a compaction, the quality of work really drops down a lot. And I really struggled with that.
+
+I started giving it the same directions over and over. First, I created a file where I could copy-paste stuff from, but that got... Honestly, that was taking a lot of effort. A lot of time, a lot of effort. So this wasn't really saving me time. This was more of an exercise in like, I have to learn how to use this. Even though it's hard, I feel like there is potential. So I need to figure it out. That's first. And second, even though it wasn't saving time, it was saving energy.
+
+And then Claude released subagents support. And for a while I didn't understand what subagents are for. What are you even supposed to do? And their examples didn't really help much like a code researcher, code reviewer. But then I started thinking about it, what if I just moved all the work into subagents?
+
+It's not clear, well, I could I guess do planning, right, I could move just planning into subagent but that seemed like the worst because the context spent during planning, yes it's expensive but it's the most useful context. The planning context I felt like is not my problem. In fact, it gives a lot of useful information for the future work. What was my problem was actually context spent just trying to update the file like those painful things when you see AI struggling with the number of lines in the file or getting a test to compile because it hallucinated whole bunch of methods and then it like rewrites the test in a more standard format. You see it's struggling, struggling, struggling. There's a lot of low-level problems. And this is where a lot of context is consumed by, especially if it runs tests and tests have significant volume of output, that output really adds up in the context.
+
+While the going wisdom is that, I even saw an article that said, hey, move read-only operations to sub-agents and do write operations like actual coding in the top level agent. I don't agree with that at all. At least on my project, that never looked promising. The biggest problem was actually the coding phase.
+
+So I immediately started out with three. I did a planning subagent. I did a test engineer, and I added implementation engineer. And then I added a code reviewer. So I thought, hey, these four would make a great team. And then I created a custom command that said, hey, follow this process. Like, here is your task. And you follow this process. The process is first run the planning subagent, then run test subagent, then run implementation subagent, and then run code reviewer. And if code reviewer has any... Like the code reviewer says whether it's approved or not approved. And if it's not approved, then go back to the coding agents. So a very simple loop. And I ran it.
+
+And it was better. It was better for sure. Some problems went away immediately. First, there were no more compactions. So the context wasn't getting lost. And second, because test, at least initial test implementation, and the actual implementation were separated, I could steer them a lot better. First of all, when it was like when it implemented tests and then went to implement the functionality it did not try to fix the test so that was very clear if we're currently in the test writing mode or code writing mode, right, or implementation writing mode. So those two modes got very much separate and I could also give specific instructions to the testing agent.
+
+So the problem I had with it before was that it would write a whole bunch of tests and all of them were incorrect. And then they would spend enormous amount of time just getting them all to build. Just getting them to compile was a huge challenge, which took a lot of time, a lot of context. So I said, hey, you add only one test at a time. You add one test. You get it to build, and then you hand it off to the implementation engineer. And I actually started doing that. And in fact, I prefer in my code base, I prefer fewer beefier tests. So that worked out great for me.
+
+To be clear, we're mostly writing integration tests in our project. We don't have many parts that have logic complex enough to warrant unit tests. Of course, for unit tests, it's a little bit different, but then it's mostly a table test anyway, so it's still a single test, and it would be good at writing a table test.
+
+This worked out great. And then the reviewer, well, I had a lot of problems with the reviewer. First, the reviewer would often approve with comments for the future. Like, "Hey, yes, you can ship this, but let's address this in the future." And of course, that was treated as approval and we wouldn't. So I say, "Hey, I tried to put a lot of focus on this. We're trying to do very high quality standards. So don't approve unless all feedback is addressed." And then very often, Claude just would not iterate, like it just would not call back. So I have struggled with that a little bit.
+
+More importantly, the quality of the reviews was... Like, it was very happy to congratulate itself.
+
+## Step 6: Linus Torvalds as a Reviewer
+
+So, at one point, I was really frustrated by a set of changes that were problematic, but passed the review. And I said, hey, I want to add another reviewer. I had Linus Torvalds as a reviewer because he is famous for, and I said, hey, like in his signature harsh manner he should just criticize the code.
+
+And, oh my god, I didn't expect it to have that much impact. Well, I did say that this is a high-level reviewer. I did say it was Linus, but the quality of those reviews, they were something else entirely. It would find things I myself would miss. It would think of production issues, future issues. Like, I would often deploy something, say we're working on a feature and it needs an internal admin area. And that internal admin area usually starts out very bare bones. And sometimes my ideas of bare bones are actually naive. So I would just do the simple thing that would work. But Linus would criticize that and say, hey, you really need, there will be performance issues as soon as there are many of these objects. And he would call these agent names. All the frustrations I felt with the coding folks, he would express them for me. That was amazing. He would say, "Whoever wrote this shit needs to be fired immediately."
+
+So that was very therapeutic, if nothing else. But I did create a whole other layer of quality feedback. It would flag all the things I would flag myself, like code quality issues. It was amazing. It was like an order of magnitude better than what I had before.
+
+Of course, after that, what the team struggled with is actually implementing the feedback that Linus gives. Because the workflow was not strong enough. Like I would go code review and then back to implementation engineers. I figured no. That doesn't work. I need to have a planning phase after every review.
+
+## Step 7: Building an All-Star Team
+
+So I've actually put the planner. And then, the planner wasn't doing as great of a job as I wanted it to do, so I figured I needed to pay more attention to detail. And then a thought struck me. So like if Linus Torvalds is so much better, if having Linus as a code reviewer is so much better than just having a generic code reviewer, would it be better to hire, to use legendary personalities for each of the agents?
+
+So I figured, okay, who's the legendary project manager with attention to detail. Well, it's Joel Spolsky. Who's a legendary testing engineer? Well, clearly Kent Beck. Who is a legendary implementation engineer? Well, here it wasn't quite clear. Claude proposed a bunch of ideas, including John Carmack. But hey, John Carmack doesn't represent my values. And a lot of people who were great developers, they don't necessarily reflect my values, but there were some people who did reflect those values. These are the team that created the Go language because the Go language is like 100% reflection of my pragmatic outlook on development. So I figured, okay, Rob Pike. Rob is going to be my engineer.
+
+I actually added a few more subagents before this moment. I added an HR subagent whose job would be basically updating other agents' instructions so that I could say, hey, HR, do this and this. So I would tell HR, hey, turn this generic agent into Kent Beck. And it would do it.
+
+Anyways, so I got a team. I got Joel. I got Kent. I got Rob. I got Linus for the reviewer. The other reviewer, I don't remember who I went with initially, but I wasn't very satisfied with that. So I looked for a person who's famous for pragmatic code quality that I like, that again represents my values. I went with Kevlin Henney.
+
+I added a documentation writer. I used Raymond Chen, the Old New Thing blog author, as the documentation engineer.
+
+And I updated the workflow. I described the workflow in Claude. I updated the workflow to insert Joel after every iteration so that it would be Linus and Kevlin doing reviews and Joel figuring out what to do about those reviews, right? What, like, are we done? Should we address those issues?
+
+That worked better. Like that team could ship stuff. Like, each step here represents an order of magnitude.
+
+## Step 8: Iterating on the Plan
+
+So I had a team which was Joel doing planning, then implementation, then code review. Now, very often the code review would find that the plan was not quite great. So what I did is I started calling Linus twice. I first had Joel do the plan. Then I had him call Linus to review the plan. Then back to Joel to address the issues that Linus found. Then back to Linus to review his updated plan, and only when Linus approves, we move on to the implementation. These got things much better, like surprisingly, iterating on the plan was a great idea. Like, it had bigger effect than one would expect from something like that.
+
+## Step 9: Don Melton and the Three-Phase Workflow
+
+I got Joel as a manager. But problem is, it turned out that Joel, for all his attention to detail, he was very much focused on shipping, just like in real life. But problem is in real life, that makes sense. When the AI manager says, hey, like, we have this great feedback, but let's do it in the future because we need to ship, ship, ship now. That's not what we want. We can spend a couple more hours checking along and implementing the feedback so that the quality is better overall because I wouldn't ship that anyway.
+
+So I had to fire Joel. I replaced him with Don Melton. Don Melton is someone who I really admire and respect and I listen to him on podcasts for many hours and I just got him to manage the team. I quickly found, though, that he's great at insisting on quality, but he is not doing detailed technical planning. So I rehired Joel. I put him next in the workflow after Don Melton. So Don would do a high-level plan and immediately Joel would expand it into a detailed technical plan, technical spec, which is something that Joel is great at, is known to be great at. And then the implementation agents would do their work. Then Kevlin and Linus would review. And then again, Don would make the next high-level plan.
+
+So I split the workflow into three phases. Phase one was planning. Or I call them steps. Step one was planning. And the planning step is Don, then Joel, then Linus, then back to Don, Joel, Linus, and iterate until Linus approves. Then we go into the implementation step. And the implementation step is we call Kent. Then we call Rob. Then there is actual documentation writer, Raymond. And then we do review, we do in parallel, we call Kevlin and we call Linus. And after the review is done, we go back to the planning phase. So now it's Don, then Joel, then Linus. They iterate again on the new plan. And I said, hey, all of this only finishes like we declare a task done if all three of them agree. Like if Don, and Joel, and Linus during the planning phase, they all agree that we're all done. Nothing left to do. Then we're done.
+
+When I became an all-star team and it was Linus calling everyone incompetent, I started calling it a circus or a zoo because it was really funny to watch all of this happening. Really funny.
+
+## The Supporting Cast
+
+### The Librarian
+
+There is step three, which is the finalization step. I actually had a few more things in this team that I didn't talk about. One was that when all this ends, I had a librarian agent that I then switched to a named agent, Ward Cunningham, the creator of WikiWikiWeb. There was a librarian agent that when everything, like when everyone approves and the task is done, it goes and updates those docs under _AI to remember stuff for the future. Honestly, it's a hit and miss. And all of these updates, I treat them as proposals. So like it updates a batch of files. I review what it added. And sometimes I approve, sometimes I approve only some of those changes, sometimes I discard all those changes.
+
+### The HR Agent
+
+And then there is my HR agent. So I said, hey, run HR agent at the end of each process. And if there were any... The way I formulated this is that if there were any revision requests from the user, try to update agent instructions to incorporate those, so that the next time user doesn't have to give those requests. So that the agent basically perform better the next time so that it wouldn't be necessary.
+
+And when I moved to All-Star team, this became Andy Grove, the head of Intel. So Andy was in charge of updating my agent instructions. And again, these updates I treated as proposals. It would very often make changes, much more often than I would like. And often those changes would not be desirable because they would be, again, weirdly over-focusing on some small aspect that it would dedicate a lot of instruction tokens to make better. So I thought, hey, not worth it.
+
+Ideally, I want to improve this a lot. I really want to iterate on agent definition. So like compact them, make them better, et cetera. I don't feel like I'm anywhere near though. It sometimes proposes good changes. Sometimes I accept and commit them. Very often I just rework everything that he did. So this is not a very successful experiment.
+
+### The Problem Solver
+
+Then the third agent I didn't talk about is problem solver. So sometimes I figured, sometimes the implementation agent would get stuck and wouldn't be able to make progress, especially on a harder task. So I created what I call the problem solver. I eventually proposed that I call it Donald Knuth. So Donald was my, in the all-star team, it was Donald, the problem solver, and his role would be when the agent gets stuck, he would hand off to the problem solver. And problem solver would figure out like why we got stuck. So instead of trying to do coding, he would do a thorough, thorough investigation into what's wrong, what we're doing, and he would say, "Hey, here's how to move forward."
+
+Honestly, this was more of an idea than a practical thing because I only saw it engaged once. Maybe I missed it working like one or two times more, but it's very seldom thing that agents these days get stuck. But if they do, if they ever do, they do know whom to call. And this worked wonderfully. In those cases where I think it was a testing agent, he just couldn't figure out how to write a test for a particular area. And normally it would just veer more and more off course and give up, right? But here it figured out, hey, like I'm stuck. And I need to call the... Well, it wasn't Donald back then. It was just a generic problem solver. And it called problem solver. And problem solver did solve the problem. Like, it figured out why it couldn't progress and had enough. And it succeeded then. So, yeah. Huge success, but again, I only have one recorded case of it being useful, so maybe not that important.
+
+## My Workflow Commands
+
+I have two main commands. One command is called "do" and it's for starting a task. Another command is called "rev" and it's for requesting revisions on the current task. Those are really, really two most important commands. I have HR command so that I don't have to, and I have a few more weird, like I have HR instill command that tries to instill more personality into an agent that was created after some person. So it would ask an agent, hey, doesn't your current instructions reflect your personality well? Like, is there something you want to improve? Like, feel free to rewrite your own instruction file. And the agent would go and talk about himself, right? So like, add a lot more of his own style and personality into the instructions, which I feel like helps.
+
+## The Moral of the Story
+
+So, is there a moral to this story? Well, the moral is that I have these definitions published. Of course, these definitions are kind of specific to my projects and my values, but they're not that hard to create separately. Claude has a great subagent. Well, I think the command is called agent. So it has a great command to create new agents that you just describe the agent and it does a great job expanding it into detailed instructions. And if you create an HR agent, it would also be quite good at expanding instructions. So it's not that hard to create a team like this on your own.
+
+And there is really not that much. I mean, there is a bunch of experimentation to do, of course. But the effect of this is amazing. Throughout the summer, without changing the models, this went, I think, at least two orders of magnitude in the complexity of tasks and the quality of the output that it could do for me. In fact, it went from feeling like a really smart junior developer to feeling like not a very solid senior developer basically. You know, the kind of senior developer that's currently on the market where you spend five years doing something and you now call yourself a senior developer. So that kind of senior developer. But still, it was a huge step up.
+
+Each step here represents an order of magnitude. Initially, right, on the lower steps, I had to deal with just doing stupid stuff like disabling a test or not even forgetting what the task was. And at the highest level, I was dealing with things like the tests are written well, but just not exactly in the style I want, so how do I steer it to a better style? But, like, instead of doing junior level work it was doing like senior level work, just not the kind of senior engineer I'd like to have, but like a different kind of senior engineer with different values. Still a problem, but a much higher level problem, much better problem to have.

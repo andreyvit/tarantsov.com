@@ -33,6 +33,7 @@ type Roots struct {
 	ThemeDir   string
 	AssetsDir  string
 	DataDir    string
+	DraftMode  bool
 }
 
 type Library struct {
@@ -63,6 +64,7 @@ type Item struct {
 	Name            string
 	Ext             string
 	Error           error
+	Draft           bool
 	ServePath       string
 	SourcePath      string
 	Frontmatter     *PageFrontmatter
@@ -171,11 +173,12 @@ func main() {
 	var rootDir string
 	var outputDir string
 	var listenAddr string
-	var isDevMode, isWriteMode bool
+	var isDevMode, isDraftMode, isWriteMode bool
 	flag.StringVar(&rootDir, "root", ".", "root directory")
-	flag.StringVar(&outputDir, "o", "public", "output directory")
+	flag.StringVar(&outputDir, "o", "public", "outpuat directory")
 	flag.StringVar(&listenAddr, "listen", ":8080", "listen address")
 	flag.BoolVar(&isDevMode, "dev", false, "development mode (reload content from disk)")
+	flag.BoolVar(&isDraftMode, "d", false, "draft mode (show drafts)")
 	flag.BoolVar(&isWriteMode, "w", false, "write content to disk instead of serving it")
 	flag.Parse()
 
@@ -184,6 +187,7 @@ func main() {
 		ThemeDir:   filepath.Join(rootDir, "theme"),
 		AssetsDir:  filepath.Join(rootDir, "assets"),
 		DataDir:    filepath.Join(rootDir, "data"),
+		DraftMode:  isDraftMode,
 	}
 
 	if isWriteMode {
@@ -351,7 +355,7 @@ var navItemTextRe = regexp.MustCompile(`\[(.*)\]`)
 
 func loadLibrary(roots *Roots) *Library {
 	lib := &Library{}
-	loadContent(roots.ContentDir, lib)
+	loadContent(roots.ContentDir, lib, roots.DraftMode)
 	lib.Templates = loadTemplates(filepath.Join(roots.ThemeDir, "templates"))
 	lib.Layouts = loadTemplates(filepath.Join(roots.ThemeDir, "layouts"))
 	lib.Partials = loadTemplates(filepath.Join(roots.ThemeDir, "partials"))
@@ -410,7 +414,7 @@ func loadLibrary(roots *Roots) *Library {
 	return lib
 }
 
-func loadContent(contentDir string, lib *Library) {
+func loadContent(contentDir string, lib *Library, isDraftMode bool) {
 	var items []*Item
 	walkDir(contentDir, func(fullPath, relPath string, d fs.DirEntry) {
 		item, err := loadContentItem(fullPath, relPath)
@@ -430,6 +434,10 @@ func loadContent(contentDir string, lib *Library) {
 			lib.ItemsByServePath[item.ServePath] = item
 		}
 		lib.ItemsByName[item.Name] = item
+
+		if item.Draft && !isDraftMode {
+			continue
+		}
 
 		lib.ItemsBySection[item.Section] = append(lib.ItemsBySection[item.Section], item)
 	}
@@ -463,6 +471,12 @@ func loadContentItem(fullPath, relPathWithExt string) (*Item, error) {
 		return item, err
 	}
 	item.Frontmatter = fm
+
+	raw = bytes.TrimSpace(raw)
+	if trimmed, ok := bytes.CutPrefix(raw, []byte("DRAFT\n")); ok {
+		item.Draft = true
+		raw = bytes.TrimSpace(trimmed)
+	}
 
 	summary, raw, err := extractTag(raw, "x-summary")
 	if err != nil {

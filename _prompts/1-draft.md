@@ -1,0 +1,1 @@
+Turn voice transcript into a draft article. Keep my words, just apply minimal edits (reordering, removals, replacements) I request and minimal changes to combine into flowing text. Break into paragraphs that are not too long. Crucial to keep my voice, style, phrases and word choices.
