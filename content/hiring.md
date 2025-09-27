@@ -1,6 +1,6 @@
 # Bubblehouse is hiring
 
-_TLDR: We are looking for principal-level (i.e. “beyond senior”) engineers who share our pragmatic values for a fully-remote position paying around $250k/yr._
+_TLDR: We are looking for principal-level (i.e. “beyond senior”) engineers who share our pragmatic values for a fully-remote position paying around $200–250k/yr._
 
 Bubblehouse is a fast-growing custom and private loyalty platform. Headquartered in NYC, the entire team is fully remote and spread across US and Europe. We power loyalty programs for large brands, including household names.
 
@@ -26,7 +26,7 @@ Looking for:
 
 6. Great spoken English, and ability to communicate 9am to noon in New York time zone.
 
-We give you a literally fast-paced environment (with features delivered in days) where you need to solve very challenging problems with practical advanced technology, take on entrenched market leaders, and help entrepreneurs across small and large businesses delight their fans. Our pay is around $250k/yr, all cash, with a possibility of equity in the future.
+We give you a literally fast-paced environment (with features delivered in days) where you need to solve very challenging problems with practical advanced technology, take on entrenched market leaders, and help entrepreneurs across small and large businesses delight their fans. Our pay is in $200–$250k/yr range, all cash, with a possibility of equity in the future.
 
 We are straightforward, driven, personal, and a little messy. We all _care_, and we expect you to care too.
 
