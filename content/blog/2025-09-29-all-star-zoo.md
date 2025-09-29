@@ -1,6 +1,4 @@
-DRAFT
-
-# My all-star zoo, or why I hired Linus Torvalds, Kent Beck, and Rob Pike for my AI team
+# My all-star zoo, or why I hired Linus Torvalds, Kent Beck and Rob Pike for my AI team
 
 <x-summary>
 This summer, I transformed Claude Code from a junior intern into an okay engineering team.
@@ -32,7 +30,7 @@ Batch mode is what we're after. That's the pipe dream of AI coding: explaining a
 
 ## The journey
 
-(If you just want to implement this, scroll down to the “How to” section.)
+TLDR: If you just want to implement this, scroll down to the “My current setup (aka HOWTO)” section.
 
 Every step here makes AI more capable — i.e. capable of (a) handling more complex problems and/or (b) handling same problems with fewer errors.
 
@@ -144,9 +142,9 @@ It might not be obvious why subagents are a good idea. Wasn't obvious to me:
 
     **Each subagent** re-reads `CLAUDE.md` and has separate instructions, so you can stuff fresh propaganda straight into its brain. A short lifetime of the agents means they never forget your teachings.
 
-So I got myself a team of agents:
+So I got myself a team:
 
-* planner (“tech lead”)
+* tech planner / tech lead
 * test engineer
 * implementation engineer
 * code reviewer
@@ -271,16 +269,18 @@ First, if Linus was so much better than an average agent, why not give specific 
 
 This works because Claude knows the personality of the chosen person really well and aligns its actions accordingly. So it cannot be someone unknown.
 
-I also changed the workflow, splitting it into clear planning and execution phases, and asking Linux to review Don's and Joel's plan before implementation.
+I also changed the workflow, splitting it into clear planning and execution phases, and asking Linus to review Don's and Joel's plan before implementation.
 
-This is where I'm at currently, and I'm going to describe my full setup now and go over the future changes.
+This is where I'm currently at. Will describe my full setup now, plus some future plans.
 
 
-## My current setup
+## My current setup (aka HOWTO)
 
 ### Workflow instructions
 
-Here is my workflow section from `CLAUDE.md`. It has more agents and more details that I've talked about so far, we'll get into those in a moment. Behold, my very own personal circus:
+Here is my workflow section from `CLAUDE.md`. It has more agents and more details that I've talked about so far, we'll get into those in a moment.
+
+Behold, my very own personal circus:
 
 ```
 ## Process
@@ -467,6 +467,8 @@ That _does_ work, though, and it produces good tests. (Not _great_ tests, mind y
 4. Writing docs and preserving knowledge for posterity is in a bare-bones state, not much improved after the very first attempts.
 
 5. I hear great things about Codex, and want to try it too. But the lack of subagents is giving me pause.
+
+6. A friend of mine claims successful interactive AI usage. Some day I will explore that side deeper as well.
 
 
 ## Resources

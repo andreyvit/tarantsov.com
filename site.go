@@ -453,6 +453,8 @@ func loadContent(contentDir string, lib *Library, isDraftMode bool) {
 	}
 }
 
+const MarkdownExtensions = (parser.CommonExtensions & ^parser.MathJax) | parser.AutoHeadingIDs
+
 func loadContentItem(fullPath, relPathWithExt string) (*Item, error) {
 	item := &Item{
 		SourcePath: fullPath,
@@ -483,7 +485,7 @@ func loadContentItem(fullPath, relPathWithExt string) (*Item, error) {
 		return item, err
 	}
 	if summary != nil {
-		p := parser.NewWithExtensions(parser.CommonExtensions | parser.AutoHeadingIDs | parser.Mmark)
+		p := parser.NewWithExtensions(MarkdownExtensions)
 		s := string(markdown.ToHTML([]byte(summary.Body), p, nil))
 		item.RSSSummary = strings.TrimSpace(removeAllTags(s))
 
@@ -495,7 +497,7 @@ func loadContentItem(fullPath, relPathWithExt string) (*Item, error) {
 
 	switch item.Ext {
 	case mdExt:
-		p := parser.NewWithExtensions(parser.CommonExtensions | parser.AutoHeadingIDs | parser.Mmark)
+		p := parser.NewWithExtensions(MarkdownExtensions)
 		item.MarkdownDoc = markdown.Parse(raw, p)
 
 		// dump(item.MarkdownDoc, "")
