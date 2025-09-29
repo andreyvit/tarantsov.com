@@ -7,7 +7,7 @@
     --link-color-active: blue;
     --link-color-active-bg: rgba(0, 0, 255, 0.16);
     --link-color-light: blue;
-    --subtle-border-color: #777;
+    --subtle-border-color: #ddd;
 }
 
 body,
@@ -93,7 +93,7 @@ p {
 
 @media screen and (min-width: 650px) and (min-device-width: 650px) {
     html {
-        font-size: 18px;
+        font-size: 16px;
     }
     .page--jumbo body {
         font-size: 20px;
@@ -145,6 +145,30 @@ a {
     }
 }
 
+pre {
+    white-space: pre-wrap;
+    font-size: 0.8rem;
+    margin-block: 1.33rem;
+    padding: 0.8rem;
+    background: fff;
+    border: 1px solid var(--subtle-border-color);
+    border-radius: 0.5rem;
+}
+@media screen and (min-width: 800px) and (min-device-width: 800px) {
+    pre {
+        margin-inline: -2rem;
+    }
+}
+@media screen and (min-width: 1020px) and (min-device-width: 1020px) {
+    pre {
+        margin-inline: -10rem;
+    }
+}
+
+code {
+    font-size: 0.87rem;
+}
+
 p.lead {
     font-size: 1.33rem;
 }
@@ -185,13 +209,14 @@ p.lead {
     width: 100%;
 }
 .cta__button {
+    cursor: pointer;
     /*margin-top: 0.5rem;*/
     margin: 0;
-    /*font-size: 1rem;*/
-    /*padding: 0.5rem 1rem;*/
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
 }
 .cta__smallprint {
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     font-style: italic;
 }
 
@@ -267,7 +292,7 @@ img.hero {
 }
 
 .blog-item__title {
-    font-size: 1rem;
+    font-size: 1.1rem;
     margin: 0 5rem 0.6rem 0;
     text-align: left;
     font-weight: 400;
@@ -298,12 +323,12 @@ img.hero {
     color: var(--link-color);
 }
 .blog-item__date-day {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     font-weight: 400;
 }
 .blog-item__date-year {
     display: block;
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     opacity: 0.7;
     line-height: 1.2;
 }

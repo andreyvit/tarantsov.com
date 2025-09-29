@@ -8,23 +8,44 @@ This summer, I transformed Claude Code from a junior intern into an okay enginee
 
 Like everyone else, I've started with Cursor (and Windsurf, and Zed). And... it didn't work well at all.
 
-Our production codebase is way over 200k LOC of Go code alone, plus a lot of HTML and some JS, and it was just too complex for AI to handle well. Decidedly _not_ a boilerplate CRUD app.
+Our production codebase is way over 200k LOC of Go code alone, plus a lot of HTML and some JS, and it was just too complex for AI to handle well. Decidedly *not* a boilerplate CRUD app, lots of business logic with complex configuration-driven branching; it requires the top *human* developers to deal with it.
 
-With that codebase, AI was only good for doing the very few boilerplate tasks like adding enums.
+With that codebase, Cursor-style AI was only good for doing the very few boilerplate tasks like adding enums and writing some tests.
 
-Over the summer, I got from _there_ to a pretty darn successful AI team, and here's my journey.
+Over the summer, I got from _there_ to a pretty darn successful AI team.
 
 
-## Step 1: Claude Code
+## The goal
 
-Switching to the stupid command-line `claude` tool (and porting over all rules into `CLAUDE.md`) has given me an immediate boost.
+There are two ways to use AI coding tools:
+
+1. Interactive. You collaborate with AI, ask questions, refine a plan, then execute together.
+
+2. Batch. You give it a task and switch to something else, and come back in 30-60 minutes expecting significant progress on that task.
+
+The interactive way is <s>for suckers</s> err, for less experienced developers. If you're a senior and you try to do that, you'd never gain any efficiency.
+
+(That's not completely true. Sometimes you do want Claude to help out on the task you're working on yourself. But that rarely saves you any time if your own pace is high enough.)
+
+Batch mode is what we're after. That's the pipe dream of AI coding: explaining a task, and coming back to that task done.
+
+
+## The journey
+
+(If you just want to implement this, scroll down to the “How to” section.)
+
+Every step here makes AI more capable — i.e. capable of (a) handling more complex problems and/or (b) handling same problems with fewer errors.
+
+### Step 1: Claude Code
+
+Switching to the stupid command-line `claude` tool (and porting over all rules into `CLAUDE.md`) gives an immediate boost.
 
 I don't know what it is that Claude Code does differently from Cursor, but it _is_ very different. It uses a _lot_ more tokens and produces _much_ better results even when using exactly the same model.
 
-But, of course, you do not have to use exactly the same model. One of the superpowers of Claude Code is running Opus via your Claude Max subscription. Opus is much smarter than Sonnet. Claude Max costs $200/mo but gives you $250 worth of tokens every 5 hours, and that's just about enough to run your AI coding agent on Opus for hours.
+But, of course, you do not have to use exactly the same model. **One of the superpowers of Claude Code is running Opus** via your Claude Max subscription. Opus is much smarter than Sonnet. Claude Max costs $200/mo but gives you $250 worth of tokens every 5 hours, and that's just about enough to run your AI coding agent on Opus for hours.
 
 
-## Step 2: Instructions
+### Step 2: Instructions
 
 Claude needs a lot of instructions to work effectively, otherwise it spends way too much time re-discovering your codebase.
 
@@ -32,18 +53,18 @@ I got Claude writing its own instructions:
 
 1. Before working on a new area of the codebase, I'd ask Claude to explore that area and write a summary to `_ai/` folder.
 
-2. I then curate and rewrite that summary to emphasize the important parts.
+2. I'd then curate and rewrite that summary to emphasize the important parts.
 
-3. When doing a task, I ask Claude to read the docs under `_ai/`. Profit!
+3. When doing a task, I'd ask Claude to read the docs under `_ai/`. Profit!
 
-Note: Claude really sucks at writing docs. Always did, still does. It fails to tell essentials from superflous, and tends to fixate on the weirdest things.
+Note: Claude really sucks at writing docs. Always did, still does. It fails to tell the essential from the superfluous, and tends to fixate on the weirdest things.
 
-That's why all docs that Claude is allowed to update go under `_ai/`, while manually-written docs go into `_readme/` or `CLAUDE.md`. Letting it touch the real, human-written documentation was a disaster.
+That's why all docs that Claude is allowed to update go under `_ai/`, while manually-written docs are safely isolated under `_readme/` or `CLAUDE.md`. Letting it touch the real, human-written documentation was a disaster.
 
 
-## Step 3: Planning
+### Step 3: Planning
 
-Following Anthropic's advice, I've added an explicit planning step that produced a plan file. The subsequent execution steps were supposed to read and update the file.
+Following Anthropic's advice, I've added an explicit planning step that produced a plan file. The subsequent execution steps were supposed to read and update the file to track progress.
 
 Claude supports custom commands, and here's my `/do` command from that period:
 
@@ -52,14 +73,14 @@ Your task:
 $ARGUMENTS
 
 1. Ultrathink.
-2. Read any relevants docs under `_ai` and `_readme`.
+2. Read any relevant docs under `_ai` and `_readme`.
 3. Read a lot of code. Find related code and read it. Anticipate challenges and proactively research them too.
 4. Formulate acceptance criteria for the original task.
 6. Where should you put the test(s)? Work hard to find a bunch of relevant tests, read them all, find the best place.
 7. Build a VERY detailed plan. Anticipate any challenges. Save it to `aiplan.txt`.
 8. Execute. Iterate until all tests pass! DO NOT BE LAZY. DO NOT TAKE SHORTCUTS. Work hard. Document progress in `aiplan.txt` as you go.
 9. Do not stop until all tests pass! Document progress in `aiplan.txt` as you go!
-10. Review your own code, criticue it, find shortcomings. Compare to the instructions in `CLAUDE.md`. Review high-level design. Verify your work against the acceptance criteria. ALL tests must pass. Iterate to address any issues.
+10. Review your own code, critique it, find shortcomings. Compare to the instructions in `CLAUDE.md`. Review high-level design. Verify your work against the acceptance criteria. ALL tests must pass. Iterate to address any issues.
 11. ALL TESTS MUST PASS IN THE END. Anything broken? You caused that. FIX IT.
 12. DID I MENTION TO DOUBLE CHECK THAT **ALL** TESTS PASS?
 13. Write down any valuable facts that are worth remembering (high bar) in one-line fact format (like `CLAUDE.md`) to the relevant file under `_ai`.
@@ -67,44 +88,13 @@ $ARGUMENTS
 
 You can probably feel my pain; every line here is written in blood and tears.
 
-
-## Intermission: What the fuck are we even trying to achieve?
-
-There are two ways to use AI coding tools:
-
-1. Interactive. You collaborate with AI, ask questions, refine a plan, then execute together.
-2. Batch. You give it a task and switch to something else, and come back in 30-60 minutes expecting significant progress on that task.
-
-The interactive way is <s>for suckers</s> err, for less experienced developers.
-
-If you're a senior and you try to do that, you'd never gain any efficiency.
-
-Batch mode is what we're after. That's the pipe dream of AI coding: explaining a task, and coming back to that task done.
-
-
-## Step 4: Subagents
-
-Claude Code has introduced subagents mid-summer.
-
-It might not be obvious why subagents are a good idea. Wasn't obvious to me.
-
-So let me tell you how Claude Code without subagents sucks:
-
-1. It forgets things. By the time it gets the tests to compile, it has stopped paying attention to half of your original request and to 80% of the instructions from `CLAUDE.md`.
-
-2. It runs out of context and then forgets things. Debugging stupid compilation errors and test run issues takes a lot of tokens. In about 15–30 minutes, it runs out of context and performs compaction, which gives equal weight to your original request and to the minutiae of how it was failing to make the tests pass.
-
-3. It gets confused as to what it's supposed to be doing. Will update tests to match a broken implementation, or will break a perfectly working implementation to get a broken test to pass.
-
-4. It is hard to steer. Getting it to remember to run all the tests and make sure they all passes was next to impossible.
-
-See that `/do` command. And a few more that I needed — here's `/wat`:
+I had a whole bunch of commands like that. Here's `/wat`:
 
 ```
 Is that a fucking joke? WTF!!!!!!
 $ARGUMENTS
 
-Ultrathink a plan first. Criticue your work. Then execute. ITERATE UNTIL DONE AND ALL TESTS PASS.
+Ultrathink a plan first. Critique your work. Then execute. ITERATE UNTIL DONE AND ALL TESTS PASS.
 ```
 
 and here's `/dumbass`:
@@ -115,29 +105,53 @@ and here's `/dumbass`:
 3. Make sure ALL tests still pass.
 ```
 
-and I had a dedicated `/fix-failing-test` command too.
+`/slowdown`:
 
-If this doesn't scream “smooth sailing” to you...
+```
+Slow down!!! Go STEP BY STEP, making sure each task is DONE DONE, all tests pass on EACH step, review and improve your work on EACH step, after EACH test. Can your work be improved? Consider CLAUDE.md guidelines, code style, readability, best practices, larger system-wide design concerns.
+```
 
-Claude subagents are invoked with a separate context window and separate instructions. This is huge because:
+`/fix-failing-test`:
 
-1. It solves the context window problem. All those painful attempts at fixing compilation errors stay in subagent's context and are discarded once it's done.
+```
+Dig deep into each failing test and fix them ONE BY ONE. Run tests and see failures first. Ultrathink a plan, make a list of tasks. Read the code, both tests, handlers and supporting code. Use logging to understand what's happening. Read relevant docs under @_ai/. THEN fix the test. Update AI docs as you learn more. DO NOT STOP UNTIL ALL TESTS PASS.
+```
 
-2. It solves the steering problem. Each agent re-reads `CLAUDE.md` and has separate instructions, so you can stuff fresh propaganda straight into its brain. A short lifetime of the agents means they never forget your teachings.
+You get the idea. Manual steering all the way.
 
-3. It solves the goal drift problem if you do a smart separation of agents. The testing agent will be writing tests and won't try to break your code, while the implementation agent will be trying to get tests to pass without dumbing them down.
 
-(If you never experienced this, you might not appreciate how big of a problem it is when instead of fixing the implementation, the agent just deletes the related test and calls it a day.)
+### Step 4: Subagents
 
-So I created:
+Claude Code has introduced subagents mid-summer.
 
-* a planning agent
-* a test engineer
-* an implementation engineer
-* a code reviewer
-* and a few niche ones
+It might not be obvious why subagents are a good idea. Wasn't obvious to me:
 
-My approach goes against some widespread internet wisdom saying that subagents are for read-only tasks, and coding should be at the top level. That wouldn't work for me at all. Pollution of the context window with low-level coding issues was one of my main problems, and the other problem was separation between test-writing and implementation-writing activities. I needed coding to be at subagent level only.
+1. Claude forgets things. By the time it gets the tests to compile, it has stopped paying attention to half of your original request and to 80% of the instructions from `CLAUDE.md`.
+
+    **Subagents** are short-lived with their own context window. All those painful attempts at fixing compilation errors stay in subagent's context and are discarded once it's done.
+
+2. Claude runs out of context and then forgets things. Debugging stupid compilation errors and test run issues takes a lot of tokens. In about 15–30 minutes, it runs out of context and performs compaction, which gives equal weight to your original request and to the minutiae of how it was failing to make the tests pass.
+
+    **With subagents,** most of the token usage is at subagent level, so top level does not require compactions often. (Introduction of report files a few steps later helps to continue the task even if top-level context gets compacted.) Subagents are short-lived so don't run out of context either.
+
+3. Claude gets confused as to what it's supposed to be doing. Will update tests to match a broken implementation, or will break a perfectly working implementation to get a broken test to pass.
+
+    **With subagents,** the top-level agent can focus on the big picture and only sees a steady progress towards the goal.
+
+    Smart separation of agents helps further. The testing agent will be writing tests and won't try to break your code, while the implementation agent will be trying to get tests to pass without dumbing them down.
+
+4. Claude is hard to steer. Getting it to remember to run all the tests and make sure they all pass was next to impossible.
+
+    **Each subagent** re-reads `CLAUDE.md` and has separate instructions, so you can stuff fresh propaganda straight into its brain. A short lifetime of the agents means they never forget your teachings.
+
+So I got myself a team of agents:
+
+* planner (“tech lead”)
+* test engineer
+* implementation engineer
+* code reviewer
+
+My approach goes against some widespread internet wisdom saying that subagents work best for read-only tasks, and that coding should be at the top level.
 
 I rewrote `/do` as:
 
@@ -155,16 +169,16 @@ Process:
 - Finally, librarian agent to store the accumulated knowledge in _ai.
 ```
 
-Things got much better. Some problems went away immediately: no more compactions, no more mangled tests, no more tests left broken.
+Things were now much better. Some problems went away immediately: no more compactions, no more mangled tests, no more tests left broken.
 
-From this point on, I never needed `/wat`, `/dumbass`, `/fix-failing-test` and other similar commands for low-level steering; all of that was solved by the virtual team.
+From this point on, I've never needed `/wat`, `/dumbass`, `/fix-failing-test` and other similar commands for low-level steering again; all of that was solved by the virtual team, and I could focus on producing the kind of code that I wanted.
 
 
-## Step 5: Linus Torvalds
+### Step 5: Linus Torvalds
 
-The problems I was encountering got upgraded to a higher level, but still, code reviews were missing a lot of issues, and the team would often do something very stupid.
+The new bottleneck was the code reviewer not doing their job. The general quality of the output was quite bad, requiring extensive rewriting or many rounds of detailed feedback.
 
-I got very frustrated with another self-congratulatory review one day, and asked to add another reviewer agent:
+One day, in a stroke of genius, I asked `/agent` command to build me a dream reviewer:
 
 ```
 Linus Torvalds doing very high-level review of the changes in his signature ruthless and pragmatic style. Must run after the normal code reviewer. Focuses on high-level details only, not on the code minutea:
@@ -179,95 +193,282 @@ Linus Torvalds doing very high-level review of the changes in his signature ruth
 - Do our tests actually test what they claim they do?
 - Do our tests verify the core functionalities in integration? Or do they only check superficial things?
 - Did we overfocus on edge cases and forgot to test the core functionality?
-- Are tests maintenable? Could tests be simplified?
+- Are tests maintainable? Could tests be simplified?
 - Is core maintainable? Could implementation be simplified?
 - Did we overlook some part of the system that also needed to be updated?
 - Do we follow the highest standards of quality? Have a fresh look at the code through the eyes of Linus. Would he approve it?
 ```
 
-And, oh my god, I didn't expect it to have that much impact. Well, I did say that this is a high-level reviewer. I did say it was Linus, but the quality of those reviews, they were something else entirely. It would find things I myself would miss. It would think of production issues, future issues. Like, I would often deploy something, say we're working on a feature and it needs an internal admin area. And that internal admin area usually starts out very bare bones. And sometimes my ideas of bare bones are actually naive. So I would just do the simple thing that would work. But Linus would criticize that and say, hey, you really need, there will be performance issues as soon as there are many of these objects. And he would call these agent names. All the frustrations I felt with the coding folks, he would express them for me. That was amazing. He would say, "Whoever wrote this shit needs to be fired immediately."
+This nicely outlines the kinds of problems I was dealing with before.
 
-So that was very therapeutic, if nothing else. But I did create a whole other layer of quality feedback. It would flag all the things I would flag myself, like code quality issues. It was amazing. It was like an order of magnitude better than what I had before.
+(Note: this is the _input_ to the `/agent` command, which then expands it into a multi-page set of instructions.)
 
-Of course, after that, what the team struggled with is actually implementing the feedback that Linus gives. Because the workflow was not strong enough. Like I would go code review and then back to implementation engineers. I figured no. That doesn't work. I need to have a planning phase after every review.
+And it worked. Linus started finding _all_ of the issues I would normally report, and then some. Example review:
 
-## Step 7: Building an All-Star Team
+```
+Alright, let me cut through the bullshit and tell you what I REALLY think about this "implementation."
 
-So I've actually put the planner. And then, the planner wasn't doing as great of a job as I wanted it to do, so I figured I needed to pay more attention to detail. And then a thought struck me. So like if Linus Torvalds is so much better, if having Linus as a code reviewer is so much better than just having a generic code reviewer, would it be better to hire, to use legendary personalities for each of the agents?
+The Verdict: A Half-Assed Implementation That Nobody Actually Tested
 
-So I figured, okay, who's the legendary project manager with attention to detail. Well, it's Joel Spolsky. Who's a legendary testing engineer? Well, clearly Kent Beck. Who is a legendary implementation engineer? Well, here it wasn't quite clear. Claude proposed a bunch of ideas, including John Carmack. But hey, John Carmack doesn't represent my values. And a lot of people who were great developers, they don't necessarily reflect my values, but there were some people who did reflect those values. These are the team that created the Go language because the Go language is like 100% reflection of my pragmatic outlook on development. So I figured, okay, Rob Pike. Rob is going to be my engineer.
+[...]
+What's ACTUALLY Wrong With This Garbage
 
-I actually added a few more subagents before this moment. I added an HR subagent whose job would be basically updating other agents' instructions so that I could say, hey, HR, do this and this. So I would tell HR, hey, turn this generic agent into Kent Beck. And it would do it.
+1. THE TESTS ARE FAILING, YOU MORONS: Look at the integration test output - "corrupted journal segment file" errors everywhere! The grep test is
+COMPLETELY broken - it can't find ANY of the entries it just wrote. Did anyone actually RUN these tests before declaring victory? Of course not!
+2. Journal corruption handling is NONEXISTENT: When the journal package encounters corruption, it just... logs a warning and deletes the file? What kind
+of amateur hour bullshit is this? In a production system, you don't just DELETE corrupted data and pretend nothing happened!
+3. The done field removal was theater: They removed an unused done bool field from the cursor struct and called it a "code review fix." Congratulations,
+you found dead code that should never have been committed in the first place. Want a cookie?
+4. Test quality is GARBAGE:
+  - Tests write records but don't verify they're actually persisted
+  - Journal writes aren't being committed properly (notice the missing Commit() calls?)
+  - The integration tests are creating journals but not properly initializing them
+  - Error handling in tests just logs and continues - that's not testing, that's PRAYER
+5. The implementation is INCOMPLETE:
+  - Where's the pagination? They check count >= in.Limit but never actually implemented proper cursor-based pagination
+  - The grep filtering happens AFTER fetching all records - that's going to be a disaster with large datasets
+  - No timeout handling for the merge operation - what happens when one tenant's journal is slow?
+[...]
+```
 
-Anyways, so I got a team. I got Joel. I got Kent. I got Rob. I got Linus for the reviewer. The other reviewer, I don't remember who I went with initially, but I wasn't very satisfied with that. So I looked for a person who's famous for pragmatic code quality that I like, that again represents my values. I went with Kevlin Henney.
+Therapeutic, if nothing else.
 
-I added a documentation writer. I used Raymond Chen, the Old New Thing blog author, as the documentation engineer.
+New problems:
 
-And I updated the workflow. I described the workflow in Claude. I updated the workflow to insert Joel after every iteration so that it would be Linus and Kevlin doing reviews and Joel figuring out what to do about those reviews, right? What, like, are we done? Should we address those issues?
+1. The rest of the team would often forget the review recommendations (they'd focus on one aspect and forget the rest).
 
-That worked better. Like that team could ship stuff. Like, each step here represents an order of magnitude.
+2. Linus would often review existing code, not just the new changes, and so would recommend a lot of unrelated modifications.
 
-## Step 8: Iterating on the Plan
+3. After a round of fixes, Linus would re-review fresh changes without remembering his prior review, so would miss that things were slipping through.
 
-So I had a team which was Joel doing planning, then implementation, then code review. Now, very often the code review would find that the plan was not quite great. So what I did is I started calling Linus twice. I first had Joel do the plan. Then I had him call Linus to review the plan. Then back to Joel to address the issues that Linus found. Then back to Linus to review his updated plan, and only when Linus approves, we move on to the implementation. These got things much better, like surprisingly, iterating on the plan was a great idea. Like, it had bigger effect than one would expect from something like that.
+The bottleneck has now shifted from execution to task management.
 
-## Step 9: Don Melton and the Three-Phase Workflow
 
-I got Joel as a manager. But problem is, it turned out that Joel, for all his attention to detail, he was very much focused on shipping, just like in real life. But problem is in real life, that makes sense. When the AI manager says, hey, like, we have this great feedback, but let's do it in the future because we need to ship, ship, ship now. That's not what we want. We can spend a couple more hours checking along and implementing the feedback so that the quality is better overall because I wouldn't ship that anyway.
+### Step 6: Preserving reports
 
-So I had to fire Joel. I replaced him with Don Melton. Don Melton is someone who I really admire and respect and I listen to him on podcasts for many hours and I just got him to manage the team. I quickly found, though, that he's great at insisting on quality, but he is not doing detailed technical planning. So I rehired Joel. I put him next in the workflow after Don Melton. So Don would do a high-level plan and immediately Joel would expand it into a detailed technical plan, technical spec, which is something that Joel is great at, is known to be great at. And then the implementation agents would do their work. Then Kevlin and Linus would review. And then again, Don would make the next high-level plan.
+Prior to this, I've been asking agents to read and update `aiplan.txt`, thinking that a single file is easiest to find and hardest to miss.
 
-So I split the workflow into three phases. Phase one was planning. Or I call them steps. Step one was planning. And the planning step is Don, then Joel, then Linus, then back to Don, Joel, Linus, and iterate until Linus approves. Then we go into the implementation step. And the implementation step is we call Kent. Then we call Rob. Then there is actual documentation writer, Raymond. And then we do review, we do in parallel, we call Kevlin and we call Linus. And after the review is done, we go back to the planning phase. So now it's Don, then Joel, then Linus. They iterate again on the new plan. And I said, hey, all of this only finishes like we declare a task done if all three of them agree. Like if Don, and Joel, and Linus during the planning phase, they all agree that we're all done. Nothing left to do. Then we're done.
+Well apparently everyone was too happy to rewrite it to accomodate the changing narrative, and after a couple of iterations the file failed to preserve the original intent or any significant prior feedback.
 
-When I became an all-star team and it was Linus calling everyone incompetent, I started calling it a circus or a zoo because it was really funny to watch all of this happening. Really funny.
+So I asked the agents to store any user feedback and their reports in sequentially numbered files like `_tasks/2025-09-whatever-it-is-we-are-doing/11-something.md`. The initial task goes into `01-user-request.md`, and then each agent writes one output file per invocation.
 
-## The Supporting Cast
+With this, I could teach Linus to limit his review to the scope of the task we're doing, and also to look at all prior reports to see if anything was missed.
 
-### The Librarian
+Now I needed Claude to match the level of execution to the level of the feedback.
 
-There is step three, which is the finalization step. I actually had a few more things in this team that I didn't talk about. One was that when all this ends, I had a librarian agent that I then switched to a named agent, Ward Cunningham, the creator of WikiWikiWeb. There was a librarian agent that when everything, like when everyone approves and the task is done, it goes and updates those docs under _AI to remember stuff for the future. Honestly, it's a hit and miss. And all of these updates, I treat them as proposals. So like it updates a batch of files. I review what it added. And sometimes I approve, sometimes I approve only some of those changes, sometimes I discard all those changes.
 
-### The HR Agent
+### Step 7: All-star team
 
-And then there is my HR agent. So I said, hey, run HR agent at the end of each process. And if there were any... The way I formulated this is that if there were any revision requests from the user, try to update agent instructions to incorporate those, so that the next time user doesn't have to give those requests. So that the agent basically perform better the next time so that it wouldn't be necessary.
+First, if Linus was so much better than an average agent, why not give specific personalities to every agent?
 
-And when I moved to All-Star team, this became Andy Grove, the head of Intel. So Andy was in charge of updating my agent instructions. And again, these updates I treated as proposals. It would very often make changes, much more often than I would like. And often those changes would not be desirable because they would be, again, weirdly over-focusing on some small aspect that it would dedicate a lot of instruction tokens to make better. So I thought, hey, not worth it.
+* I tried Joel Spolsky as the tech lead. He has legendary attention to detail that I was after, but turns out he also has a legendary focus on shipping and would discard the feedback saying “we could polish this forever but we need to SHIP IT!” So I replaced Joel with [Don Melton](https://donmelton.com/about/) (the creator of WebKit and a guy I enjoyed listening to for hours) with his “I don't care if it works, is it RIGHT?” approach.
 
-Ideally, I want to improve this a lot. I really want to iterate on agent definition. So like compact them, make them better, et cetera. I don't feel like I'm anywhere near though. It sometimes proposes good changes. Sometimes I accept and commit them. Very often I just rework everything that he did. So this is not a very successful experiment.
+* i then re-hired Joel to be a technical planner, running after Don to expand his direction into detailed plans, because I found that Don ain't very keen on writing detailed specs.
 
-### The Problem Solver
+* I replaced my low-level reviewer with [Kevlin Henney](https://en.wikipedia.org/wiki/Kevlin_Henney) because I loved his code quality talks. This had a big effect on test quality, because Kevlin insists on tests communicating the intent well.
 
-Then the third agent I didn't talk about is problem solver. So sometimes I figured, sometimes the implementation agent would get stuck and wouldn't be able to make progress, especially on a harder task. So I created what I call the problem solver. I eventually proposed that I call it Donald Knuth. So Donald was my, in the all-star team, it was Donald, the problem solver, and his role would be when the agent gets stuck, he would hand off to the problem solver. And problem solver would figure out like why we got stuck. So instead of trying to do coding, he would do a thorough, thorough investigation into what's wrong, what we're doing, and he would say, "Hey, here's how to move forward."
+* I replaced the test engineer with Kent Beck, the implementation engineer with Rob Pike, and used personas for a bunch of secondary agents that I haven't talked about yet. It didn't have an immediately noticeable effect.
 
-Honestly, this was more of an idea than a practical thing because I only saw it engaged once. Maybe I missed it working like one or two times more, but it's very seldom thing that agents these days get stuck. But if they do, if they ever do, they do know whom to call. And this worked wonderfully. In those cases where I think it was a testing agent, he just couldn't figure out how to write a test for a particular area. And normally it would just veer more and more off course and give up, right? But here it figured out, hey, like I'm stuck. And I need to call the... Well, it wasn't Donald back then. It was just a generic problem solver. And it called problem solver. And problem solver did solve the problem. Like, it figured out why it couldn't progress and had enough. And it succeeded then. So, yeah. Huge success, but again, I only have one recorded case of it being useful, so maybe not that important.
+This works because Claude knows the personality of the chosen person really well and aligns its actions accordingly. So it cannot be someone unknown.
 
-## My Workflow Commands
+I also changed the workflow, splitting it into clear planning and execution phases, and asking Linux to review Don's and Joel's plan before implementation.
 
-I have two main commands. One command is called "do" and it's for starting a task. Another command is called "rev" and it's for requesting revisions on the current task. Those are really, really two most important commands. I have HR command so that I don't have to, and I have a few more weird, like I have HR instill command that tries to instill more personality into an agent that was created after some person. So it would ask an agent, hey, doesn't your current instructions reflect your personality well? Like, is there something you want to improve? Like, feel free to rewrite your own instruction file. And the agent would go and talk about himself, right? So like, add a lot more of his own style and personality into the instructions, which I feel like helps.
+This is where I'm at currently, and I'm going to describe my full setup now and go over the future changes.
 
-## The Moral of the Story
 
-So, is there a moral to this story? Well, the moral is that I have these definitions published. Of course, these definitions are kind of specific to my projects and my values, but they're not that hard to create separately. Claude has a great subagent. Well, I think the command is called agent. So it has a great command to create new agents that you just describe the agent and it does a great job expanding it into detailed instructions. And if you create an HR agent, it would also be quite good at expanding instructions. So it's not that hard to create a team like this on your own.
+## My current setup
 
-And there is really not that much. I mean, there is a bunch of experimentation to do, of course. But the effect of this is amazing. Throughout the summer, without changing the models, this went, I think, at least two orders of magnitude in the complexity of tasks and the quality of the output that it could do for me. In fact, it went from feeling like a really smart junior developer to feeling like not a very solid senior developer basically. You know, the kind of senior developer that's currently on the market where you spend five years doing something and you now call yourself a senior developer. So that kind of senior developer. But still, it was a huge step up.
+### Workflow instructions
 
-Each step here represents an order of magnitude. Initially, right, on the lower steps, I had to deal with just doing stupid stuff like disabling a test or not even forgetting what the task was. And at the highest level, I was dealing with things like the tests are written well, but just not exactly in the style I want, so how do I steer it to a better style? But, like, instead of doing junior level work it was doing like senior level work, just not the kind of senior engineer I'd like to have, but like a different kind of senior engineer with different values. Still a problem, but a much higher level problem, much better problem to have.
+Here is my workflow section from `CLAUDE.md`. It has more agents and more details that I've talked about so far, we'll get into those in a moment. Behold, my very own personal circus:
 
-## Part 4: Resources
+```
+## Process
 
-- [GitHub repository with all agent definitions](#) (link coming soon)
-- [Complete workflow documentation](#) (link coming soon)
-- [Example Claude Code sessions with the circus in action](#) (link coming soon)
+**CRITICAL: NO CODING AT TOP LEVEL!**
 
-### The Complete All-Star Roster
+Our star agentic team:
 
-- **Don Melton** - High-level technical lead
-- **Joel Spolsky** - Detailed implementation planner
-- **Kent Beck** - Test engineer
-- **Rob Pike** - Implementation engineer
-- **Donald Knuth** - Advanced problem solver
-- **Kevlin Henney** - Code quality reviewer
-- **Linus Torvalds** - High-level architecture reviewer
-- **Raymond Chen** - Documentation writer
-- **Ward Cunningham** - Knowledge librarian
-- **Andy Grove** - HR and agent instruction optimizer
+* Don Melton (the tech lead)
+* Joel Spolsky (the implementation planner)
+* Kent Beck (the test engineer)
+* Rob Pike (the implementation engineer)
+* Donald Knuth (advanced problem solver)
+* Kevlin Henney (low-level reviewer)
+* Linus Torvalds (high-level reviewer)
+* Raymond Chen (the doc writer)
+* Ward Cunningham (knowledge librarian)
+* Andy Grove (HR and manager of agents)
+
+We use a task-based workflow to ensure thorough planning, implementation, and review. Tasks are organized under the `_tasks/` directory with per-task subdirectories like `_tasks/YYYY-MM-DD-task-slug/`. Files inside are numbered sequentially: `01-user-request.md`, `02-plan.md`, `03-tests.md`, etc.
+
+**The _tasks/ directory is for DOCUMENTATION ONLY (plans, reports, reviews). All actual CODE (tests, implementation, etc.) goes in the proper codebase locations.**
+
+WE ALWAYS USE SUBAGENTS! THE TOP-LEVEL AGENT ONLY CALLS ON SUBAGENTS!
+
+WORKFLOW - STEP 1 - SAVE REQUEST:
+
+1. User's initial request is saved to `##-user-request.md` or `##-user-revision.md` (`##` = next number)
+
+WORKFLOW - STEP 2 - PLAN:
+
+1. Don analyzes the codebase etc and creates `##-plan.md`
+2. Joel expands Don's plan with technical details and creates `##-tech-plan.md`
+3. Linus reviews Don's plan and Joel's tech plan.
+4. Don, Joel and Linus iterate until Linus approves the plan, repeating all the steps.
+
+WORKFLOW - STEP 3 - EXECUTION:
+
+1. Kent writes tests in the appropriate package in the codebase (see Test Location Rules below) and creates a report in task dir. If stuck, call Donald Knuth.
+2. Rob implements code changes in the codebase and creates a report in task dir. If stuck, call Donald Knuth.
+3. Raymond updates the docs: API docs in _docs/, AI docs in _ai/. Creates report in task dir.
+4. Kevlin and Linus review the changes in parallel. Important: any API docs updates MUST be reviewed for hallucinations by Kevlin very very carefully.
+5. Go back to PLAN step so that Don reviews all results, Joel again expands, and Linus reviews. If ALL THREE (Don, Joel, Linus) agree that the task is FULLY DONE, then we're done, otherwise they iterate to come up with a new plan (as PLAN step explains) and then move back to EXECUTION.
+
+WORKFLOW - STEP 4 - FINALIZATION:
+
+1. Ward preserves all the new learnings from these tasks for future reference.
+2. If user asked for any corrections during this task, Andy considers updating agent instructions to align them to the user's intent. This is a VERY HIGH BAR, because agent definitions should not be updated lightly.
+
+**IMPORTANT:** PLAN step ALWAYS follows after EXECUTION. Each time we run Kent, Rob, Raymond, or Kevlin, we then must run PLAN step - Don, Joel and Linus.
+
+**CRITICAL: NO CODING AT TOP LEVEL!**
+```
+
+### How I start a task
+
+I figured that I'd rather preserve the details for the future, so I add technical instructions to a Linear ticket, example:
+
+```
+Treat customers with certain tags (default "Login with Shop") as members
+
+When require active account is configured, if a customer logs in with Shop Pay (Shopify assigns "Login with Shop" tag in this case), we need to treat them as active because they aren't often getting marked as active shop accounts.
+
+Also other custom tags should be usable to make the customer a member.
+
+Impl:
+
+* Introduce a list of additional tags to consider a customer active as a configuration parameter, just like a list of tags to enable/disable loyalty program. Don't forget to update configuration UI.
+
+* Note that "Login with Shop" always makes customer active; the configuration option is additional tags. So there are built-in tags (so far only one) and additional tags.
+
+* “active” here means ShopAccountState = bpub.CustomerAccountStateActive. So basically, in fireback/processing-customers.go, when a configured tag is found amongst customer tags (including shop tags and internal tags, so use Customer.HasShopOrInternalTag / HasAnyShopOrInternalTag), override in.ShopAccountState to active. This requires updating tags before shop state!
+
+* A good test would enable require-active-account behavior and points/tiers, set up a customer, and make sure they have no tier. Then update the customer with the configured tag, and verify that they now have a (base) tier.
+```
+
+And then I copy the link from Linear and run e.g.:
+
+```
+/do [DEV-1140: Treat customers with certain tags (default "Login with Shop") as members](https://linear.app/bubblehouse/issue/DEV-1140/treat-customers-with-certain-tags-default-login-with-shop-as-members)
+```
+
+and Claude uses Linear MCP server to read the ticket, then starts executing.
+
+This `/do` command is currently defined very simply:
+
+```
+Your new task:
+$ARGUMENTS
+
+---
+
+FOLLOW THE WORKFLOW in CLAUDE.md. Create tasks for each step. Take no shortcuts.
+```
+
+There's almost nothing extra here, but the reminder to follow a plan helps to avoid situations when Claude forgets to use the workflow.
+
+You might have noticed that I give specific technical details. That's not the entire plan for the feature; but those are the things I know I want and expect, and that can be implemented multiple ways.
+
+I found that if I definitely want a specific implementation approach, I'd better mention it.
+
+
+### How I request revisions
+
+After the team is done, I review the code and use `/rev` command to request revisions in freeform text, listing everything that I'd like to change. The command is defined as follows:
+
+```
+Requesting revisions:
+$ARGUMENTS
+
+---
+
+CONTINUE the task, do not create a new one. (If I didn't mention which task, continue the current one!)
+
+Save the user's revision request to a new file under task dir!
+
+FOLLOW THE WORKFLOW in CLAUDE.md. Create tasks for each step. Take no shortcuts.
+
+- If user is requesting code review, start with Kevlin and Linus first, before everything else.
+- Andy (HR) should strongly consider if the agents can be aligned to anticipate similar instructions the next time.
+
+IMPORTANT: Don must run after EVERY agent invocation to decide on future actions. Each time we run Linus / Kevlin / Donald, next is ALWAYS Joel. This process only finishes when all reviews pass with flying colors!
+```
+
+
+### How successful is this team?
+
+Simple requests: the team does it very well, at superb quality level.
+
+Moderately complex requests with technical instructions: the team can ship these with a couple of revisions.
+
+Complex tickets: the team can advance of these and either give you a reasonable starting point, or ship with dozens of revisions and a hit to code quality (ie even more revisions asking to do extra review passes over the code and to fix specific problems).
+
+I take the most complex tasks for myself, while having the AI team work the simple to medium ones; that's most efficient in both time and effort.
+
+
+### How good is the result?
+
+Note the word “revisions” above. I'm very particular about code quality. Moreover, with AI (and with a less-senior human team), code quality tends to be self-reproducing: if you add a bunch of shit, later that shit is gonna be taken as an exemplary way of doing something (“existing pattern”) and reproduced a few more times.
+
+This is a point worth repeating:
+
+*The best devs say it's shit when they see shit, but AI and less senior teams see existing patterns and reproduce them.*
+
+AI-generated code is great in a sense that it's so much better than what was produced before, but it's not good enough to just commit. Whenever I see a better way of writing something, I would often go for it, either requesting a revision or making the change myself.
+
+And yet, most of the time the generated code works, and has at least reasonable quality.
+
+With one notable exception...
+
+
+### The quality of tests
+
+I'm still fighting to get the tests to come out exactly how I want them.
+
+I wrote a detailed essay teaching AI the style that I want, [`tests-and-helpers.md`](https://github.com/andreyvit/claude-code-setup/blob/main/tests-and-helpers.md), titled “Questioning the abstraction level of test helpers”, and often point to it when requesting a revision. It is too long to reproduce here, but I've added it to the public demo repository.
+
+I should really include it in the agent instructions, but it's kinda too long for that, so I'm still figuring it out. Meanwhile, often tests come out wrong, and I do `/rev Improve tests, see @_readme/tests-and-helpers.md`.
+
+That _does_ work, though, and it produces good tests. (Not _great_ tests, mind you, but perfectly acceptable ones.)
+
+
+### Supporting cast (other agents)
+
+* Donald Knuth is a problem solver. This is my way of switching from coding to deep analysis when things get dire. Coding agents tend to try to continue coding; but if stuck, they invoke Donald, and Donald is instructed to refrain from making changes and instead to think hard and provide a deep analysis of the right way forward.
+
+    (I don't see Donald called often, but on harder tasks he does make an appearance and saves the day.)
+
+* The librarian is supposed to update knowledge under `_ai`, but does a very poor job, and I need to explore this area further.
+
+* The HR agent (Andy) updates definitions of other agents; I ask him to make changes to my team (which works great). I also try running him to update agent definitions after revisions, but I discard his changes most of the time. (Initially, when just bootstrapping the system, he did play an important role in instilling the right principles. We've now crossed some threshold, though, and his further contributions are undesirably specific.)
+
+* The documentation writer updates our API docs, but again, AI isn't great at writing good docs right now, so this is hit and miss.
+
+
+## Remaining problems and future plans
+
+1. Agents fucking suck at sequential numbering of report files and at staying within a single task directory. Such a stupid thing, causing so much friction. I want to build an MCP server that makes this easier on them.
+
+2. Like I've mentioned, getting the tests to be exactly how I want them on the first try is an unsolved problem so far, although I have a workaround.
+
+3. My attempts at getting Claude to handle manual front-end testing were totally unsatisfactory.
+
+4. Writing docs and preserving knowledge for posterity is in a bare-bones state, not much improved after the very first attempts.
+
+5. I hear great things about Codex, and want to try it too. But the lack of subagents is giving me pause.
+
+
+## Resources
+
+GitHub repository with all agent definitions, custom commands and instructions: [`andreyvit/claude-code-setup`](https://github.com/andreyvit/claude-code-setup/).

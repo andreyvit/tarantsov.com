@@ -1,6 +1,4 @@
-DRAFT
-
-# Senior devs too good for AI? Saving energy not time
+# Senior devs too good for AI? Saving energy, not time
 
 <x-summary>
     If you're like me... the more experience you have, the harder it is for you to gain from coding with AI. And yet, I think I made it work.
@@ -14,7 +12,7 @@ If you're like me... the more experience you have, the harder it is for you to g
 
 3. Your idea of what code is good is much more developed and specific, so the bar is higher, and you'll accept a much narrower range of solutions.
 
-I am a technical director with 25 years of intense experience, so I've been suffering this conondrum ever since AI coding got traction.
+I am a technical director with 25 years of intense experience, so I've been suffering this conundrum ever since AI coding got traction.
 
 Many professionals are gonna try AI agents and say “wow this is really stupid, I'd rather do it all myself”. Honestly — I was tempted myself.
 

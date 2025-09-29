@@ -1,0 +1,9 @@
+- Working title
+- Audience
+- Goal of the piece
+- Must-include points/stories/examples: {…}
+- Off-limits or sensitive topics: {…}
+- Reading level: tech-savvy {e.g., general, tech-savvy, exec}
+- Target length: {e.g., 1,200–1,500 words}
+- Sources to cite / link: {URLs or “none”}
+- Call-to-action (CTA): {… or “none”}

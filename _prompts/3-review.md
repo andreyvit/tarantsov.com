@@ -1,0 +1,1 @@
+Review the following blog post. Check spelling and grammar. Check style. Tell me everything that must be corrected. Then see if any sections are hard to read, and provide suggestions. Then anticipate and give me 10 questions the audience might have.
