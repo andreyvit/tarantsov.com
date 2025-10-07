@@ -1,7 +1,7 @@
-{
-  "permalink": "/blog/2011/09/papers-every-programmer-should-read/",
-  "topics": ["craft"],
-}
+---
+permalink: "/blog/2011/09/papers-every-programmer-should-read/"
+topics: ["craft"]
+---
 
 # Papers Every Programmer Should Read
 

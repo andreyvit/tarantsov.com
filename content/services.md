@@ -1,12 +1,7 @@
-{
-  "template": "main",
-  "cta": {
-    "primary": {
-      "title": "Working with me starts here",
-      "href": "http://example.com/"
-    }
-  }
-}
+---
+template: "main"
+cta: {"primary": {"title": "Working with me starts here", "href": "http://example.com/"}}
+---
 
 
 ## Fast-moving businesses are my clients

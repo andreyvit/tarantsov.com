@@ -1,6 +1,6 @@
-{
-  "permalink": "/blog/2011/08/two-indispensable-email-add-ons-followup-cc-and-ohlife/",
-}
+---
+permalink: "/blog/2011/08/two-indispensable-email-add-ons-followup-cc-and-ohlife/"
+---
 
 # Two Indispensable Email Add-ons (FollowUp.cc &amp; OhLife)
 

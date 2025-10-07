@@ -1,6 +1,6 @@
-{
-  "title": "Meet Andrey",
-  "template": "main",
-}
+---
+title: "Meet Andrey"
+template: "main"
+---
 
 Hey!

@@ -8,6 +8,7 @@
     --link-color-active-bg: rgba(0, 0, 255, 0.16);
     --link-color-light: blue;
     --subtle-border-color: #ddd;
+    --subtle-background-color: #f7f7f7;
 }
 
 body,
@@ -343,4 +344,17 @@ img.hero {
 }
 .blog-item__wordcnt {
     font-weight: 100;
+}
+
+.related-articles {
+    border: 1px solid var(--subtle-border-color);
+    padding: 1.5rem 2rem;
+    margin: 3rem 0;
+    border-radius: 0.5rem;
+    background: var(--subtle-background-color);
+}
+.related-articles--header {
+    font-size: 0.8rem;
+    text-align: center;
+    font-weight: 300;
 }

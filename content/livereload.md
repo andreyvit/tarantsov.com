@@ -1,4 +1,4 @@
-{
-  "title": "LiveReload",
-  "template": "main",
-}
+---
+title: "LiveReload"
+template: "main"
+---

@@ -10,5 +10,36 @@
         {{ .Content }}
     </article>
 
+    {{if .Related}}
+    <aside class="related-articles">
+        <header class="related-articles--header">
+            Check out these other fine articles in {{.Related.Topic}} topic
+        </header>
+        <div class="blog-list">
+            {{range .Related.Items}}
+            <a class="blog-item" href="{{.LinkURL}}">
+                <time class="blog-item__date" datetime="{{.DateISOStr}}">
+                    <span class="blog-item__date-day">{{.MonthDay}}</span>
+                    <span class="blog-item__date-year">{{.Year}}</span>
+                </time>
+                <h2 class="blog-item__title">
+                    {{.Title}}
+                </h2>
+                {{if .Summary}}
+                <div class="blog-item__summary">
+                    {{.Summary}}
+                    {{if .WordCount}}
+                    <span class="blog-item__wordcnt">
+                        ({{.WordCount}} words)
+                    </span>
+                    {{end}}
+                </div>
+                {{end}}
+            </a>
+            {{end}}
+        </div>
+    </aside>
+    {{end}}
+
     <x-include partial="subscribe"></x-include>
 </div>

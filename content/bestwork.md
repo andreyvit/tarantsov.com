@@ -1,6 +1,6 @@
-{
-  "template": "main",
-}
+---
+template: "main"
+---
 
 # Helping makers and creatives do their best work
 

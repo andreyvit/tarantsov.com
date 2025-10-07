@@ -22,6 +22,7 @@ import (
 	"time"
 
 	"github.com/andreyvit/jsonfix"
+	"github.com/andreyvit/naml"
 	"github.com/gomarkdown/markdown"
 	"github.com/gomarkdown/markdown/ast"
 	"github.com/gomarkdown/markdown/html"
@@ -41,6 +42,7 @@ type Library struct {
 	ItemsByServePath map[string]*Item
 	ItemsByName      map[string]*Item
 	ItemsBySection   map[SectionName][]*Item
+	ItemsByTopic     map[string][]*Item
 
 	Templates map[string]*Template
 	Layouts   map[string]*Template
@@ -80,6 +82,8 @@ type Item struct {
 	Summary         template.HTML
 	RSSSummary      string
 	WordCount       int
+
+	Related *Related
 }
 
 type MainNavItem struct {
@@ -101,6 +105,7 @@ type Template struct {
 
 type PageFrontmatter struct {
 	Title       string          `json:"title"`
+	Topics      []string        `json:"topics"`
 	Template    string          `json:"template"`
 	Layout      string          `json:"layout"`
 	PageClasses []string        `json:"page_classes"`
@@ -128,7 +133,8 @@ type SiteVM struct {
 }
 
 type ItemVM struct {
-	item *Item
+	item    *Item
+	Related *RelatedVM
 }
 
 func (vm *ItemVM) LinkURL() string        { return vm.item.LinkURL }
@@ -142,6 +148,16 @@ func (vm *ItemVM) Year() string           { return vm.item.Date.Format("2006") }
 func (vm *ItemVM) DateStr() string        { return vm.item.DateStr }
 func (vm *ItemVM) DateISOStr() string     { return vm.item.Date.Format("2006-01-02") }
 func (vm *ItemVM) RSSDate() string        { return vm.item.Date.Format(time.RFC1123Z) }
+
+type Related struct {
+	Topic string
+	Items []*Item
+}
+
+type RelatedVM struct {
+	Topic string
+	Items []*ItemVM
+}
 
 type SectionName string
 
@@ -348,7 +364,11 @@ func renderCTA(tag *Tag, lib *Library, renderCtx *RenderContext) (string, error)
 
 func renderInclude(tag *Tag, lib *Library, renderCtx *RenderContext) (string, error) {
 	view := tag.Attrs["partial"]
-	return renderPartial(lib, view, &struct{}{})
+	return renderPartial(lib, view, &struct {
+		// Attrs map[string]string
+	}{
+		// Attrs: tag.Attrs,
+	})
 }
 
 var navItemTextRe = regexp.MustCompile(`\[(.*)\]`)
@@ -397,7 +417,7 @@ func loadLibrary(roots *Roots) *Library {
 	}
 
 	siteVM := &SiteVM{
-		BlogItems: wrapItems(lib.ItemsBySection[Blog]),
+		BlogItems: wrapItems(lib.ItemsBySection[Blog], true),
 	}
 
 	for _, item := range lib.Items {
@@ -429,6 +449,7 @@ func loadContent(contentDir string, lib *Library, isDraftMode bool) {
 	lib.ItemsByServePath = make(map[string]*Item)
 	lib.ItemsByName = make(map[string]*Item)
 	lib.ItemsBySection = make(map[SectionName][]*Item)
+	lib.ItemsByTopic = make(map[string][]*Item)
 	for _, item := range items {
 		if item.ServePath != "" {
 			lib.ItemsByServePath[item.ServePath] = item
@@ -440,6 +461,10 @@ func loadContent(contentDir string, lib *Library, isDraftMode bool) {
 		}
 
 		lib.ItemsBySection[item.Section] = append(lib.ItemsBySection[item.Section], item)
+
+		for _, topic := range item.Frontmatter.Topics {
+			lib.ItemsByTopic[topic] = append(lib.ItemsByTopic[topic], item)
+		}
 	}
 
 	for _, items := range lib.ItemsBySection {
@@ -451,6 +476,30 @@ func loadContent(contentDir string, lib *Library, isDraftMode bool) {
 			)
 		})
 	}
+
+	for _, item := range lib.Items {
+		item.Related = findRelatedItems(item, lib.ItemsByTopic)
+	}
+}
+
+func findRelatedItems(item *Item, itemsByTopic map[string][]*Item) *Related {
+	for _, topic := range item.Frontmatter.Topics {
+		items := itemsByTopic[topic]
+		if len(items) > 1 {
+			var otherItems []*Item
+			for _, other := range items {
+				if other != item {
+					otherItems = append(otherItems, other)
+				}
+			}
+
+			return &Related{
+				Topic: topic,
+				Items: otherItems,
+			}
+		}
+	}
+	return nil
 }
 
 const MarkdownExtensions = (parser.CommonExtensions & ^parser.MathJax) | parser.AutoHeadingIDs
@@ -577,7 +626,7 @@ func loadContentItem(fullPath, relPathWithExt string) (*Item, error) {
 
 	item.LinkURL = "/" + strings.TrimPrefix(item.ServePath, "/")
 
-	log.Printf("Item(path = %q, name = %q, section = %q, title = %q)", item.ServePath, item.Name, item.Section, item.Frontmatter.Title)
+	log.Printf("Item(path = %q, name = %q, section = %q, title = %q, topics = %#v)", item.ServePath, item.Name, item.Section, item.Frontmatter.Title, item.Frontmatter.Topics)
 	return item, nil
 }
 
@@ -623,23 +672,37 @@ func loadDataFile(fullPath string, v any, sink ErrSink) {
 	}
 }
 
-func wrapItems(items []*Item) []*ItemVM {
+func wrapItems(items []*Item, deep bool) []*ItemVM {
 	vms := make([]*ItemVM, len(items))
 	for i, item := range items {
-		vms[i] = wrapItem(item)
+		vms[i] = wrapItem(item, deep)
 	}
 	return vms
 }
 
-func wrapItem(item *Item) *ItemVM {
-	return &ItemVM{
+func wrapItem(item *Item, deep bool) *ItemVM {
+	vm := &ItemVM{
 		item: item,
+	}
+	if deep {
+		vm.Related = wrapRelated(item.Related)
+	}
+	return vm
+}
+
+func wrapRelated(related *Related) *RelatedVM {
+	if related == nil {
+		return nil
+	}
+	return &RelatedVM{
+		Topic: related.Topic,
+		Items: wrapItems(related.Items, false),
 	}
 }
 
 func renderItem(item *Item, lib *Library, siteVM *SiteVM) ([]byte, error) {
 	in := &PageVM{
-		ItemVM: wrapItem(item),
+		ItemVM: wrapItem(item, true),
 		Site:   siteVM,
 	}
 
@@ -850,27 +913,32 @@ func walkDir(dir string, fn func(fullPath, relPath string, d fs.DirEntry)) {
 }
 
 func extractFrontmatter[T any](raw []byte) ([]byte, *T, error) {
-	const endSep = "\n}\n"
 	raw = bytes.TrimSpace(raw)
 	fm := new(T)
-	if len(raw) > 0 && raw[0] == '{' {
-		lenSep := len(endSep)
-		end := bytes.Index(raw, []byte(endSep))
-		if end < 0 && bytes.HasSuffix(raw, []byte(endSep[:lenSep-1])) {
+	if mid, ok := bytes.CutPrefix(raw, []byte("---\n")); ok {
+		const namlEndSep = "\n---\n"
+		raw = mid
+		lenSep := len(namlEndSep)
+		end := bytes.Index(raw, []byte(namlEndSep))
+		if end < 0 && bytes.HasSuffix(raw, []byte(namlEndSep[:lenSep-1])) {
 			lenSep--
 			end = len(raw) - lenSep
 		}
 		if end < 0 {
 			return nil, nil, fmt.Errorf("frontmatter: missing end")
 		}
-		end += lenSep
 
-		err := json.Unmarshal(jsonfix.Bytes(raw[:end]), fm)
+		jsonData, err := naml.Convert(raw[:end])
 		if err != nil {
 			return nil, nil, fmt.Errorf("frontmatter: %w", err)
 		}
 
-		raw = bytes.TrimSpace(raw[end:])
+		err = json.Unmarshal(jsonfix.Bytes(jsonData), fm)
+		if err != nil {
+			return nil, nil, fmt.Errorf("frontmatter: %w", err)
+		}
+
+		raw = bytes.TrimSpace(raw[end+lenSep:])
 	}
 	return raw, fm, nil
 }

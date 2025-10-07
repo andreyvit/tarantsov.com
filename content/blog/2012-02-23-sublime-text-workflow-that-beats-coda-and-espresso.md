@@ -1,7 +1,7 @@
-{
-  "permalink": "/blog/2012/02/sublime-text-workflow-that-beats-coda-and-espresso/",
-  "topics": ["Workflows"],
-}
+---
+permalink: "/blog/2012/02/sublime-text-workflow-that-beats-coda-and-espresso/"
+topics: ["Workflows"]
+---
 
 # Sublime Text Workflow That Beats Coda and Espresso
 

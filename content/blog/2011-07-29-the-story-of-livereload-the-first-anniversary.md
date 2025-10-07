@@ -1,7 +1,7 @@
-{
-  "permalink": "/blog/2011/07/the-story-of-livereload-the-first-anniversary/",
-  "topics": ["LiveReload"],
-}
+---
+permalink: "/blog/2011/07/the-story-of-livereload-the-first-anniversary/"
+topics: ["LiveReload"]
+---
 
 # The Story of LiveReload: The First Anniversary
 

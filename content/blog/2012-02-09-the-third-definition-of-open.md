@@ -1,7 +1,7 @@
-{
-  "permalink": "/blog/2012/02/the-third-definition-of-open/",
-  "topics": ["LiveReload"],
-}
+---
+permalink: "/blog/2012/02/the-third-definition-of-open/"
+topics: ["LiveReload"]
+---
 
 # The third definition of open, or How I nearly picked GPL for my product, but ended up simply publishing the source with no license (for now)
 

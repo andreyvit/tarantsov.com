@@ -1,7 +1,7 @@
-{
-  "title": "Helping makers and creatives do their best work",
-  "template": "main",
-}
+---
+title: "Helping makers and creatives do their best work"
+template: "main"
+---
 
 I'm a tools junkie.
 

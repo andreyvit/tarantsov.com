@@ -1,3 +1,7 @@
+---
+topics: ["AI Coding"]
+---
+
 # Senior devs too good for AI? Saving energy, not time
 
 <x-summary>

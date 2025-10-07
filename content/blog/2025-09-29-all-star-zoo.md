@@ -1,3 +1,7 @@
+---
+topics: ["AI Coding"]
+---
+
 # My all-star zoo, or why I hired Linus Torvalds, Kent Beck and Rob Pike for my AI team
 
 <x-summary>
