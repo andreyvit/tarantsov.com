@@ -124,8 +124,9 @@ type RenderContext struct {
 
 type PageVM struct {
 	*ItemVM
-	Site    *SiteVM
-	Content template.HTML
+	Site        *SiteVM
+	Content     template.HTML
+	Description string
 }
 
 type SiteVM struct {
@@ -702,8 +703,9 @@ func wrapRelated(related *Related) *RelatedVM {
 
 func renderItem(item *Item, lib *Library, siteVM *SiteVM) ([]byte, error) {
 	in := &PageVM{
-		ItemVM: wrapItem(item, true),
-		Site:   siteVM,
+		ItemVM:      wrapItem(item, true),
+		Site:        siteVM,
+		Description: item.RSSSummary,
 	}
 
 	var content template.HTML
