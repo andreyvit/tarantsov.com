@@ -105,6 +105,7 @@ type Template struct {
 
 type PageFrontmatter struct {
 	Title       string          `json:"title"`
+	Draft       *bool           `json:"draft"`
 	Topics      []string        `json:"topics"`
 	Template    string          `json:"template"`
 	Layout      string          `json:"layout"`
@@ -525,9 +526,8 @@ func loadContentItem(fullPath, relPathWithExt string) (*Item, error) {
 	item.Frontmatter = fm
 
 	raw = bytes.TrimSpace(raw)
-	if trimmed, ok := bytes.CutPrefix(raw, []byte("DRAFT\n")); ok {
-		item.Draft = true
-		raw = bytes.TrimSpace(trimmed)
+	if fm.Draft != nil {
+		item.Draft = *fm.Draft
 	}
 
 	summary, raw, err := extractTag(raw, "x-summary")
