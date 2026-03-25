@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 This is Andrey's personal web site and blog, with a custom single-file static site generator (`site.go`). I like to keep things simple and pragmatic, and my generator reflects that.
 
