@@ -263,6 +263,7 @@ func serve(roots *Roots, listenAddr string, isDevMode bool) {
 	http.HandleFunc("GET /assets/{path...}", func(w http.ResponseWriter, r *http.Request) {
 		path := r.PathValue("path")
 		log.Printf("serving asset: %q", path)
+		w.Header().Set("Cache-Control", "no-store")
 		http.ServeFileFS(w, r, os.DirFS(roots.AssetsDir), path)
 	})
 	http.HandleFunc("GET /{path...}", func(w http.ResponseWriter, r *http.Request) {

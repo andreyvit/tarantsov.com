@@ -81,8 +81,16 @@ h3 {
     font-size: 1.3rem;
     margin: 1.2rem 0 0.6rem;
 }
-p {
-    margin: 0 0 0.66rem;
+p,
+li ul,
+summary {
+    margin-bottom: 0.66rem;
+}
+
+blockquote {
+    margin-inline: 2rem;
+    font-style: italic;
+    font-size: 0.9rem;
 }
 
 .page--jumbo body {
@@ -357,4 +365,14 @@ img.hero {
     font-size: 0.8rem;
     text-align: center;
     font-weight: 300;
+}
+
+details {
+    padding-inline: 2rem;
+}
+
+summary {
+    margin-inline: -2rem;
+    margin-bottom: 0.6rem;
+    cursor: pointer;
 }
