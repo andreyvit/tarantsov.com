@@ -471,18 +471,23 @@ func loadContent(contentDir string, lib *Library, isDraftMode bool) {
 	}
 
 	for _, items := range lib.ItemsBySection {
-		slices.SortFunc(items, func(a, b *Item) int {
-			return cmp.Or(
-				-cmpBool(a.Date.IsZero(), b.Date.IsZero()),
-				-a.Date.Compare(b.Date),
-				-cmp.Compare(a.Ordinal, b.Ordinal),
-			)
-		})
+		slices.SortFunc(items, compareItemsLatestFirst)
+	}
+	for _, items := range lib.ItemsByTopic {
+		slices.SortFunc(items, compareItemsLatestFirst)
 	}
 
 	for _, item := range lib.Items {
 		item.Related = findRelatedItems(item, lib.ItemsByTopic)
 	}
+}
+
+func compareItemsLatestFirst(a, b *Item) int {
+	return cmp.Or(
+		-cmpBool(a.Date.IsZero(), b.Date.IsZero()),
+		-a.Date.Compare(b.Date),
+		-cmp.Compare(a.Ordinal, b.Ordinal),
+	)
 }
 
 func findRelatedItems(item *Item, itemsByTopic map[string][]*Item) *Related {
